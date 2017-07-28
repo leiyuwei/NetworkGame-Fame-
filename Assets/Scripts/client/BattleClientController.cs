@@ -90,6 +90,10 @@ namespace MultipleBattle
 			foreach (PlayerInfo pi in players.Values) {
 				int x = 0, z = 0;
 				foreach (KeyCode key in pi.playerKeys.Keys) {
+					if(!pi.playerKeys[key])
+					{
+						continue;
+					}
 					switch (key) {
 					case KeyCode.A:
 						x -= 1;

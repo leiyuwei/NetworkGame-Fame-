@@ -136,6 +136,7 @@ namespace MultipleBattle
 		void UpdateFrame(){
 			int count = 0;
 			while(count < mRunSpeed){
+				//关键／普通各一帧
 				if (mCurrentServerMessage == null) {
 					if (mRunableMessages.ContainsKey (mFrame)) {
 						mCurrentServerMessage = mRunableMessages [mFrame];

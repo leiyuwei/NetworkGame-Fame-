@@ -31,6 +31,7 @@ namespace MultipleBattle
 			txt_port.text = " Port:" + port.ToString ();
 			if(txt_ip!=null)
 			txt_ip.text =" IP:" + Network.player.ipAddress;
+			connectionConfig.SendDelay = 1;
 			this.StartServer ();
 			isBattleBegin = false;
 			currentMessage = new ServerMessage ();
@@ -106,7 +107,7 @@ namespace MultipleBattle
 		}
 
 		void SendFrame(){
-			while(mNextFrameTime <= Time.realtimeSinceStartup){
+			while(mNextFrameTime <= Time.fixedUnscaledTime){
 				mNextFrameTime += mFrameInterval;
 				SendFrameMessage ();
 				mFrame++;
