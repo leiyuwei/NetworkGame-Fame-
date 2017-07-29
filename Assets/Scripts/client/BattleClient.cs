@@ -5,7 +5,6 @@ using UnityEngine.Networking;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using System;
-using Battle;
 
 namespace MultipleBattle
 {
@@ -158,7 +157,7 @@ namespace MultipleBattle
 		{
 			Debuger.Log ("<color=green>Connect</color>");
 			//			Debug.Log (BattleClientController.Instance.playerId);
-			ClientController.Instance.playerId = nm.conn.connectionId;
+			BattleClientController.Instance.playerId = nm.conn.connectionId;
 			BattleClientUIManager.Instance.OnConnected ();
 		}
 

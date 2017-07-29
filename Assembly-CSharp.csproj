@@ -48,14 +48,13 @@
   <ItemGroup>
      <Compile Include="Assets\ArtResources\Footman\Script\MaterialChange.cs" />
      <Compile Include="Assets\ArtResources\Footman\Script\playerControl.cs" />
+     <Compile Include="Assets\Scripts\client\Ball.cs" />
      <Compile Include="Assets\Scripts\client\BattleClient.cs" />
      <Compile Include="Assets\Scripts\client\BattleClientController.cs" />
      <Compile Include="Assets\Scripts\client\BattleClientReplayManager.cs" />
      <Compile Include="Assets\Scripts\client\BattleClientResourceManager.cs" />
      <Compile Include="Assets\Scripts\client\BattleClientUIManager.cs" />
      <Compile Include="Assets\Scripts\client\BattlePlayerController.cs" />
-     <Compile Include="Assets\Scripts\client_new\Ball.cs" />
-     <Compile Include="Assets\Scripts\client_new\ClientController.cs" />
      <Compile Include="Assets\Scripts\common\SingleMonoBehivour.cs" />
      <Compile Include="Assets\Scripts\debug\Debuger.cs" />
      <Compile Include="Assets\Scripts\editor_tools\GroundPrefabGrid.cs" />

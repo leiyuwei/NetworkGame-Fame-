@@ -10,7 +10,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>Client的副本</string>
+	<string>Game</string>
 	<key>CFBundleGetInfoString</key>
 	<string>Unity Player version 5.6.2f1 (a2913c821e27). (c) 2017 Unity Technologies ApS. All rights reserved.</string>
 	<key>CFBundleIconFile</key>
@@ -26,7 +26,7 @@
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.games</string>
 	<key>CFBundleName</key>
-	<string>2DSpaceShooterExample</string>
+	<string>Ball Games</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
