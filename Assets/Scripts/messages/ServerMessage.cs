@@ -22,8 +22,6 @@ namespace MultipleBattle
 		public int frame = 1;
 		public string desc = "";
 		[SerializeField]
-		public SpawnGameObject[] spawnObjs;
-		[SerializeField]
 		public PlayerHandle[] playerHandles;
 	}
 
@@ -42,9 +40,8 @@ namespace MultipleBattle
 	[Serializable]
 	public class PlayerHandle : MessageBase
 	{
-		public int playerId;
-		public int key = 0;
-		public bool keyStatus = false;
+		public int playerId;//发送的时候服务端会根据connectionId设置playerId，所以Send的时候不用设置。
+		public Vector2 mousePos;
 	}
 
 	public class PlayerStatusArray:MessageBase {

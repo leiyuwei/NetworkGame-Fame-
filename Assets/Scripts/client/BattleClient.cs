@@ -5,6 +5,7 @@ using UnityEngine.Networking;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using System;
+using Battle;
 
 namespace MultipleBattle
 {
@@ -33,58 +34,19 @@ namespace MultipleBattle
 			mRunableMessages = new Dictionary<int, ServerMessage> ();
 			mCachedMessageList = new List<ServerMessage> ();
 			client = new NetworkClient ();
-//			var config = new ConnectionConfig();
-//			config.ConnectTimeout = 1000;
-//			client.Configure (config, 2);
 			client.RegisterHandler (MessageConstant.SERVER_TO_CLIENT_MSG, OnFrameMessage);
 			client.RegisterHandler (MessageConstant.SERVER_TO_CLIENT_LIST_MSG, OnFrameMessages);
 			client.RegisterHandler (MessageConstant.SERVER_CLIENT_STATUS, OnPlayerStatus);
 			client.RegisterHandler (MessageConstant.CLIENT_READY, OnCreatePlayer);
 			client.RegisterHandler (MsgType.Connect, OnConnected);
 			client.RegisterHandler (MsgType.Disconnect, OnDisconnect);
-//			mFrameInterval = 1f / this.mFrameRate;
 		}
 
 		float mStartTime;
-
-		public void Connect(string ip,int port){
-			client.Connect (ip,port);
-		}
-
-		public void Disconnect(){
-			client.Disconnect ();
-		}
-
-		void OnConnected(NetworkMessage nm){
-			Debuger.Log ("<color=green>Connect</color>");
-			Debug.Log (BattleClientController.GetInstance ().playerId);
-			BattleClientController.GetInstance ().playerId = nm.conn.connectionId;
-			BattleClientUIManager.GetInstance ().OnConnected ();
-		}
-
-		void OnDisconnect(NetworkMessage nm){
-			Debuger.Log ("<color=red>Disconnect</color>");
-			BattleClientUIManager.GetInstance ().OnDisconnected ();
-			BattleClientController.GetInstance ().Reset ();
-		}
-
-		void OnPlayerStatus(NetworkMessage nm){
-			Debug.Log ("<color=greed>OnPlayerStatus</color>");
-			PlayerStatusArray psa = nm.ReadMessage<PlayerStatusArray> ();
-			BattleClientUIManager.GetInstance ().OnPlayerStatus (psa);
-		}
-
-		void OnCreatePlayer(NetworkMessage nm){
-			Debug.Log ("OnCreatePlayer");
-			CreatePlayer cp = nm.ReadMessage<CreatePlayer> ();
-			BattleClientController.GetInstance ().CreatePlayers(cp);
-			BattleClientReplayManager.GetInstance ().record.playerIds = cp.playerIds;
-			BattleClientUIManager.GetInstance ().OnBattleBegin ();
-		}
-
 		bool mTestStop = false;
 
-		public void Reset(){
+		public void Reset ()
+		{
 			mCurrentServerMessage = null;
 			mFrame = 0;
 			mMaxRunableFrame = 0;
@@ -114,98 +76,145 @@ namespace MultipleBattle
 
 		//服务端30FPS的发送频率。客户端60FPS的执行频率。
 		//也就是说服务器1帧客户端2帧
-		void Update(){
+		void FixedUpdate ()
+		{
 			#region 模拟网络阻塞
-			if(Input.GetKeyDown(KeyCode.N)){
+			if (Input.GetKeyDown (KeyCode.N)) {
 				mTestStop = true;
 			}
-			if(Input.GetKeyDown(KeyCode.M)){
+			if (Input.GetKeyDown (KeyCode.M)) {
 				mTestStop = false;
 			}
-			if(mTestStop){
+			if (mTestStop) {
 				return;
 			}
 			#endregion
-
-			//把收到到消息放入可执行队列。
-			PrepareRunableMessages ();
+			if (!isBattleBegin)
+				return;
 			//执行逻辑
-			UpdateFrame ();
+			if (mPhysicFrameRemain == 0) {
+				UpdateFrame ();
+			}
+			//执行物理帧
+			if (mPhysicFrameRemain > 0) {
+				mPhysicFrameRemain--;
+			}
 		}
 
-		void UpdateFrame(){
-			int count = 0;
-			while(count < mRunSpeed){
-				//关键／普通各一帧
-				if (mCurrentServerMessage == null) {
-					if (mRunableMessages.ContainsKey (mFrame)) {
-						mCurrentServerMessage = mRunableMessages [mFrame];
-						if(mCurrentServerMessage.playerHandles.Length>0)
-							RecordMessage (mCurrentServerMessage);
-						mRunableMessages.Remove (mFrame);
-						BattleClientController.GetInstance ().LogicUpdate (mCurrentServerMessage);
-						mFrame++;
-					} else {
-//						if(mFrame>0)
-//							Debug.LogError ("Waiting key:" + mFrame);
-					}
-				} else {
-					BattleClientController.GetInstance ().LogicUpdate (mCurrentServerMessage);
-					mCurrentServerMessage = null;
-				}
-				count++;
-				mLastLogicFrameTime = Time.realtimeSinceStartup;
+		int mPhysicFrameRemain = 0;
+		float mLastFrameTime;
+
+		void UpdateFrame ()
+		{
+			if (mRunableMessages.ContainsKey (mFrame)) {
+				mCurrentServerMessage = mRunableMessages [mFrame];
+				if (mCurrentServerMessage.playerHandles.Length > 0)
+					RecordMessage (mCurrentServerMessage);
+				mRunableMessages.Remove (mFrame);
+				BattleClientController.Instance.LogicUpdate (mCurrentServerMessage);
+				mFrame++;
+				mPhysicFrameRemain = 33;
+				Time.timeScale = 1;
+			} else {
+//				Debug.Log (mPhysicFrameRemain);
+				Time.timeScale = 0;
 			}
+		}
 
-			//两帧等待间隔超过指定时间，认为是帧已经无法收到（这个跟网络延迟是有区别的）
-			if(mLastLogicFrameTime < Time.realtimeSinceStartup - 1 && mNextMaxFrameRequestTime < Time.realtimeSinceStartup){
 
-				mNextMaxFrameRequestTime = Time.realtimeSinceStartup + mMaxFrameWaitingTime;
-				if (client.isConnected) {
-					LostFrameIdsMessage lostFrameIdsMessage = GetLostFrameIds ();
-					client.Send (MessageConstant.CLIENT_REQUEST_FRAMES, lostFrameIdsMessage);
-				}
+		#region 1.Send
+
+		public void Connect (string ip, int port)
+		{
+			client.Connect (ip, port);
+		}
+
+		public void Disconnect ()
+		{
+			client.Disconnect ();
+		}
+
+		public void SendReadyToServer ()
+		{
+			Debug.Log ("SendReadyToServer");
+			ClientMessage cm = new ClientMessage ();
+			cm.clientReady = true;
+			if (client.isConnected)
+				client.Send (MessageConstant.CLIENT_READY, cm);
+		}
+
+		public void SendPlayerHandle (PlayerHandle ph)
+		{
+			if (client.isConnected && isBattleBegin) {
+				Debug.Log ("<color=red>" + JsonUtility.ToJson (ph) + "</color>");
+				client.Send (MessageConstant.CLIENT_PLAYER_HANDLE, ph);
 			}
+		}
 
-			//如果遇到网络等待的場合
-			if (mRunableMessages.Count >= 10) {
-				mRunSpeed = 4;
-			} else if (mRunableMessages.Count >= 3) {
-				mRunSpeed = 2;
-			} else if (mRunableMessages.Count <= 1){
-				mRunSpeed = 1;
-			}
+		#endregion
 
+		#region 2.Recieve
+
+		void OnConnected (NetworkMessage nm)
+		{
+			Debuger.Log ("<color=green>Connect</color>");
+			//			Debug.Log (BattleClientController.Instance.playerId);
+			ClientController.Instance.playerId = nm.conn.connectionId;
+			BattleClientUIManager.Instance.OnConnected ();
+		}
+
+		void OnDisconnect (NetworkMessage nm)
+		{
+			Debuger.Log ("<color=red>Disconnect</color>");
+			BattleClientUIManager.Instance.OnDisconnected ();
+			BattleClientController.Instance.Reset ();
+		}
+
+		void OnPlayerStatus (NetworkMessage nm)
+		{
+			Debug.Log ("<color=greed>OnPlayerStatus</color>");
+			PlayerStatusArray psa = nm.ReadMessage<PlayerStatusArray> ();
+			BattleClientUIManager.Instance.OnPlayerStatus (psa);
+		}
+
+		void OnCreatePlayer (NetworkMessage nm)
+		{
+			Debug.Log ("OnCreatePlayer");
+			CreatePlayer cp = nm.ReadMessage<CreatePlayer> ();
+			BattleClientController.Instance.CreatePlayers (cp);
+			BattleClientController.Instance.Begin ();
+			BattleClientUIManager.Instance.OnBattleBegin ();
+			isBattleBegin = true;
 		}
 
 		//得到丢失的帧
-		LostFrameIdsMessage GetLostFrameIds(){
+		LostFrameIdsMessage GetLostFrameIds ()
+		{
 			LostFrameIdsMessage messages = new LostFrameIdsMessage ();
-			List<LostFrameIdAToBMessage> abMessages = new List<LostFrameIdAToBMessage> ();
-			int fromFrame = 0;
-			int toFrame = 0;
-			for(int i = mFrame;i< mMaxFrame;i++){
-				if (!mCachedMessages.ContainsKey (i)) {
-					LostFrameIdAToBMessage abMessage = new LostFrameIdAToBMessage ();
-					abMessage.fromFrame = i;
-					abMessage.toFrame = i;
-					while(true){
-						i++;
-						if(i > mMaxFrame){
-							break;
-						}
-						if (!mCachedMessages.ContainsKey (i)) {
-							abMessage.toFrame = i;
-						} else {
-							break;
-						}
-					}
-					abMessages.Add (abMessage);
-				}
-			}
-			messages.frameAToB = abMessages.ToArray ();
+//			List<LostFrameIdAToBMessage> abMessages = new List<LostFrameIdAToBMessage> ();
+//			int fromFrame = 0;
+//			int toFrame = 0;
+//			for(int i = mFrame;i< mMaxFrame;i++){
+//				if (!mCachedMessages.ContainsKey (i)) {
+//					LostFrameIdAToBMessage abMessage = new LostFrameIdAToBMessage ();
+//					abMessage.fromFrame = i;
+//					abMessage.toFrame = i;
+//					while(true){
+//						i++;
+//						if(i > mMaxFrameGetInstance ()）
+//							break;
+//						}
+//						if (!mCachedMessages.ContainsKey (i)) {
+//							abMessage.toFrame = i;
+//						} else {
+//							break;
+//						}
+//					}
+//					abMessages.Add (abMessage);
+//				}
+//			}
+//			messages.frameAToB = abMessages.ToArray ();
 			return messages;
-
 		}
 
 		void OnFrameMessage (NetworkMessage mb)
@@ -213,9 +222,14 @@ namespace MultipleBattle
 			if (mStartTime == 0)
 				mStartTime = Time.realtimeSinceStartup;
 			mRecievedFrameCount++;
-//			Debug.Log (((mRecievedFrameCount-1) / (Time.realtimeSinceStartup - mStartTime)).ToString());
 			ServerMessage sm = mb.ReadMessage<ServerMessage> ();
 			AddServerMessage (sm);
+			while (mCachedMessages.Count > 0 && mCachedMessages.ContainsKey (mMaxRunableFrame)) {
+				mRunableMessages.Add (mMaxRunableFrame, mCachedMessages [mMaxRunableFrame]);
+				mCachedMessages.Remove (mMaxRunableFrame);
+				mMaxRunableFrame++;
+				Time.timeScale = 1;
+			}
 		}
 
 		void OnFrameMessages (NetworkMessage mb)
@@ -223,10 +237,10 @@ namespace MultipleBattle
 			if (mStartTime == 0)
 				mStartTime = Time.realtimeSinceStartup;
 			mRecievedFrameCount++;
-			Debug.Log (((mRecievedFrameCount-1) / (Time.realtimeSinceStartup - mStartTime)).ToString());
+			Debug.Log (((mRecievedFrameCount - 1) / (Time.realtimeSinceStartup - mStartTime)).ToString ());
 			CachedServerMessage cachedServerMessage = mb.ReadMessage<CachedServerMessage> ();
-			for(int i=0;i<cachedServerMessage.serverMessages.Length;i++){
-				AddServerMessage (cachedServerMessage.serverMessages[i]);
+			for (int i = 0; i < cachedServerMessage.serverMessages.Length; i++) {
+				AddServerMessage (cachedServerMessage.serverMessages [i]);
 			}
 		}
 
@@ -235,7 +249,7 @@ namespace MultipleBattle
 			//丢弃重复帧（防止受到数据被截获后的重复发送攻击）
 			if (!mCachedMessages.ContainsKey (tm.frame)) {
 				mCachedMessages.Add (tm.frame, tm);
-				if(mMaxFrame < tm.frame){
+				if (mMaxFrame < tm.frame) {
 					mMaxFrame = tm.frame;
 				}
 				//ordered list
@@ -248,45 +262,26 @@ namespace MultipleBattle
 			}
 		}
 
-		//准备可执行的网络数据
-		void PrepareRunableMessages(){
-			while(true){
-				if (mCachedMessages.Count > 0 && mCachedMessages.ContainsKey (mMaxRunableFrame)) {
-					mRunableMessages.Add (mMaxRunableFrame, mCachedMessages [mMaxRunableFrame]);
-					mCachedMessages.Remove (mMaxRunableFrame);
-					mMaxRunableFrame++;
-				} else {
-					break;
-				}
-			}
-		}
-
 		//记录操作便于回放
-		void RecordMessage(ServerMessage tm){
-			BattleClientReplayManager.GetInstance ().record.records.Add (tm);
+		void RecordMessage (ServerMessage tm)
+		{
+//			BattleClientReplayManager.Instance.record.records.Add (tm);
 		}
 
-		public void SendReadyToServer(){
-			Debug.Log ("SendReadyToServer");
-			ClientMessage cm = new ClientMessage ();
-			cm.clientReady = true;
-			client.Send (MessageConstant.CLIENT_READY,cm);
-		}
-
-		public void SendPlayerHandle(PlayerHandle ph){
-			client.Send (MessageConstant.CLIENT_PLAYER_HANDLE, ph);
-		}
+		#endregion
 	}
 
 	[Serializable]
-	public class RecordMessage{
+	public class RecordMessage
+	{
 		public int[] playerIds = new int[0];
-		public List<ServerMessage> records = new List<ServerMessage>();
+		public List<ServerMessage> records = new List<ServerMessage> ();
 	}
 
 
 	[System.Serializable]
-	public class PlayerKeys{
+	public class PlayerKeys
+	{
 		public bool KeyA;
 		public bool KeyS;
 		public bool KeyD;

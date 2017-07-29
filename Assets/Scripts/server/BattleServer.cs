@@ -70,8 +70,6 @@ namespace MultipleBattle
 		int mFrame = 0;
 		float mStartTime;
 		float t;
-
-
 		int mFrameRate = 30;
 		float mFrameInterval;
 		float mNextFrameTime;
@@ -106,14 +104,6 @@ namespace MultipleBattle
 			GUILayout.Label ((mFrame / (Time.realtimeSinceStartup - mStartTime)).ToString());
 		}
 
-		void SendFrame(){
-			while(mNextFrameTime <= Time.fixedUnscaledTime){
-				mNextFrameTime += mFrameInterval;
-				SendFrameMessage ();
-				mFrame++;
-			}
-		}
-
 		//服务器缓存的操作
 		public Dictionary<int,ServerMessage> mCachedServerMessageDic;
 
@@ -124,8 +114,62 @@ namespace MultipleBattle
 		[HideInInspector]
 		public List<PlayerHandle> playerHandleList;
 
-
 		Dictionary<int,PlayerStatus> mConnections;
+
+
+		#region 1.Send
+		//当有玩家加入或者退出或者准备的場合
+		void SendPlayerStatus(){
+			List<PlayerStatus> pss = new List<PlayerStatus> ();
+			foreach(PlayerStatus ps in mConnections.Values){
+				pss.Add (ps);
+			}
+			Debug.Log (pss.Count);
+			PlayerStatusArray psa = new PlayerStatusArray ();
+			psa.playerStatus = pss.ToArray ();
+			NetworkServer.SendToAll (MessageConstant.SERVER_CLIENT_STATUS,psa);
+		}
+
+		//告诉客户端创建人物
+		void SendBattleBegin(){
+			CreatePlayer cp = new CreatePlayer ();
+			List<int> playerIds = new List<int> ();
+			foreach(NetworkConnection nc in NetworkServer.connections){
+				Debug.Log (nc);
+				if(nc!=null)
+				playerIds.Add (nc.connectionId);
+			}
+			cp.playerIds = playerIds.ToArray ();
+			NetworkServer.SendToAll (MessageConstant.CLIENT_READY,cp);
+		}
+
+		//发送Frame消息
+		void SendFrame(){
+			while(mNextFrameTime <= Time.fixedUnscaledTime){
+				mNextFrameTime += mFrameInterval;
+				SendFrameMessage ();
+				mFrame++;
+			}
+		}
+
+		//广播消息
+		void SendFrameMessage(){
+			SetFrameMessage ();
+			NetworkServer.SendUnreliableToAll (MessageConstant.SERVER_TO_CLIENT_MSG, currentMessage);
+			SaveMessage (currentMessage);
+			currentMessage = new ServerMessage ();
+		}
+
+		//组装数据
+		void SetFrameMessage(){
+			currentMessage.frame = mFrame;
+			currentMessage.playerHandles = playerHandleList.ToArray();
+			spawnObjectList = new List<SpawnGameObject> ();
+			playerHandleList = new List<PlayerHandle> ();
+		}
+		#endregion
+
+		#region 2.Recieve
 		void OnClientConnect (NetworkMessage nm)
 		{
 			Debug.Log ("OnClientConnect");
@@ -147,18 +191,9 @@ namespace MultipleBattle
 			NetworkConnection conn = nm.conn;
 			mConnections.Remove(conn.connectionId);
 			SendPlayerStatus ();
-		}
-
-		//当有玩家加入或者退出或者准备的場合
-		void SendPlayerStatus(){
-			List<PlayerStatus> pss = new List<PlayerStatus> ();
-			foreach(PlayerStatus ps in mConnections.Values){
-				pss.Add (ps);
+			if(mConnections.Count==0){
+				UnityEngine.SceneManagement.SceneManager.LoadScene ("Server");
 			}
-			Debug.Log (pss.Count);
-			PlayerStatusArray psa = new PlayerStatusArray ();
-			psa.playerStatus = pss.ToArray ();
-			NetworkServer.SendToAll (MessageConstant.SERVER_CLIENT_STATUS,psa);
 		}
 
 		//收到用户准备
@@ -183,19 +218,6 @@ namespace MultipleBattle
 			SendPlayerStatus ();
 		}
 
-		//告诉客户端创建人物
-		void SendBattleBegin(){
-			CreatePlayer cp = new CreatePlayer ();
-			List<int> playerIds = new List<int> ();
-			foreach(NetworkConnection nc in NetworkServer.connections){
-				Debug.Log (nc);
-				if(nc!=null)
-				playerIds.Add (nc.connectionId);
-			}
-			cp.playerIds = playerIds.ToArray ();
-			NetworkServer.SendToAll (MessageConstant.CLIENT_READY,cp);
-		}
-
 		//收到用户请求丢失的帧
 		void OnRecievePlayerFrameRequest(NetworkMessage msg){
 		
@@ -206,30 +228,13 @@ namespace MultipleBattle
 			PlayerHandle playerHandle = msg.ReadMessage<PlayerHandle> ();
 			playerHandle.playerId = msg.conn.connectionId;
 			playerHandleList.Add (playerHandle);//TODO
-			Debug.Log(playerHandle.key + "||" + playerHandle.keyStatus);
 		}
-
-		//组装数据
-		void SetFrameMessage(){
-			currentMessage.frame = mFrame;
-			currentMessage.spawnObjs = spawnObjectList.ToArray ();
-			currentMessage.playerHandles = playerHandleList.ToArray();
-			spawnObjectList = new List<SpawnGameObject> ();
-			playerHandleList = new List<PlayerHandle> ();
-		}
-
-		//广播消息
-		void SendFrameMessage(){
-			SetFrameMessage ();
-			NetworkServer.SendUnreliableToAll (MessageConstant.SERVER_TO_CLIENT_MSG, currentMessage);
-			SaveMessage (currentMessage);
-			currentMessage = new ServerMessage ();
-		}
+		#endregion
 
 		//保存操作，用于补帧。TODO:用于回放
 		void SaveMessage(ServerMessage sm){
 			//只保存有操作的数据
-			if(currentMessage.playerHandles.Length > 0 || currentMessage.spawnObjs.Length > 0)
+			if(currentMessage.playerHandles.Length > 0 )
 				mCachedServerMessageDic.Add (sm.frame,sm);
 		}
 

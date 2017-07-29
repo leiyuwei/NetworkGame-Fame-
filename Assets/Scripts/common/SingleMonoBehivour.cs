@@ -5,15 +5,13 @@ public class SingleMonoBehaviour<T> : MonoBehaviour where T : MonoBehaviour{
 
 	private static T t;
 
-	public static T GetInstance(){
-		if (t == null) {
-			t = GameObject.FindObjectOfType(typeof(T)) as T;
-//			if (t == null) {
-//				GameObject go = new GameObject (typeof(T).Name);
-//				t = go.AddComponent<T> ();
-//			}
+	public static T Instance{
+		get{ 
+			if (t == null) {
+				t = GameObject.FindObjectOfType(typeof(T)) as T;
+			}
+			return t;
 		}
-		return t;
 	}
 
 	protected virtual void Awake(){

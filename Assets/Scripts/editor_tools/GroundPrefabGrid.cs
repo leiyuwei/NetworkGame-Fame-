@@ -12,7 +12,7 @@ public class GroundPrefabGrid : MonoBehaviour {
 
 	void Start () {
 		items = new List<GameObject> ();
-		List<GameObject> wallPrefabs = MapEditTool.GetInstance ().prefabs;
+		List<GameObject> wallPrefabs = MapEditTool.Instance.prefabs;
 		for(int i=0;i<wallPrefabs.Count;i++){
 			GameObject go = Instantiate<GameObject> (itemPrefab);
 			go.GetComponent<Button> ().onClick.AddListener (OnItemClick);
@@ -40,7 +40,7 @@ public class GroundPrefabGrid : MonoBehaviour {
 	}
 
 	public GameObject GetSelectPrefab(){
-		return MapEditTool.GetInstance ().prefabs [mIndex];
+		return MapEditTool.Instance.prefabs [mIndex];
 	}
 
 }

@@ -42,10 +42,10 @@ namespace MultipleBattle
 			for (int i = 0; i < record.records.Count; i++) {
 				handles.Add (record.records [i].frame, record.records [i]);
 			}
-			BattleClientController.GetInstance ().Reset ();
+			BattleClientController.Instance.Reset ();
 			CreatePlayer cp = new CreatePlayer ();
 			cp.playerIds = record.playerIds;
-			BattleClientController.GetInstance ().CreatePlayers (cp);
+			BattleClientController.Instance.CreatePlayers (cp);
 		}
 
 		void Update ()
@@ -69,11 +69,10 @@ namespace MultipleBattle
 			ServerMessage sm = new ServerMessage ();
 			sm.frame = mFrame;
 			sm.playerHandles = new PlayerHandle[0];
-			sm.spawnObjs = new SpawnGameObject[0];
 			if (handles.ContainsKey (mFrame)) {
 				sm = handles [mFrame];
 			}
-			BattleClient.GetInstance ().AddServerMessage (sm);
+			BattleClient.Instance.AddServerMessage (sm);
 			mFrame++;
 		}
 	}

@@ -7,7 +7,7 @@ namespace MultipleBattle
 {
 	public class BattleClientUIManager : SingleMonoBehaviour<BattleClientUIManager>
 	{
-
+		public GameObject dialog;
 		public InputField input_ip;
 		public InputField input_port;
 		public Button btn_connect;
@@ -30,11 +30,11 @@ namespace MultipleBattle
 			if (PlayerPrefs.HasKey ("SERVER_IP"))
 				input_ip.text = PlayerPrefs.GetString ("SERVER_IP");
 			else
-				input_ip.text = BattleClient.GetInstance ().defaultIP;
+				input_ip.text = BattleClient.Instance.defaultIP;
 			if (PlayerPrefs.HasKey ("SERVER_PORT"))
 				input_port.text = PlayerPrefs.GetString ("SERVER_PORT");
 			else
-				input_port.text = BattleClient.GetInstance ().defaultPort.ToString ();
+				input_port.text = BattleClient.Instance.defaultPort.ToString ();
 			btn_connect.onClick.AddListener (Connect);
 			btn_ready.onClick.AddListener (SendReadyToServer);
 			btn_save.onClick.AddListener (Save);
@@ -46,7 +46,7 @@ namespace MultipleBattle
 
 		void Connect ()
 		{
-			BattleClient.GetInstance ().Connect (input_ip.text, int.Parse (input_port.text));
+			BattleClient.Instance.Connect (input_ip.text, int.Parse (input_port.text));
 			input_ip.gameObject.SetActive (false);
 			input_port.gameObject.SetActive (false);
 			btn_connect.gameObject.SetActive (false);
@@ -54,11 +54,11 @@ namespace MultipleBattle
 		}
 
 		void Save(){
-			BattleClientReplayManager.GetInstance ().SaveRecord ();
+			BattleClientReplayManager.Instance.SaveRecord ();
 		}
 
 		void Replay(){
-			BattleClientReplayManager.GetInstance ().Replay ();
+			BattleClientReplayManager.Instance.Replay ();
 			btn_replay.gameObject.SetActive (false);
 			input_ip.gameObject.SetActive (false);
 			input_port.gameObject.SetActive (false);
@@ -66,12 +66,13 @@ namespace MultipleBattle
 		}
 
 		void Stop(){
-			BattleClientController.GetInstance ().Stop ();
+			BattleClientController.Instance.Stop ();
 		}
 
 		void SendReadyToServer(){
-			BattleClient.GetInstance ().SendReadyToServer ();
+			BattleClient.Instance.SendReadyToServer ();
 			btn_ready.gameObject.SetActive (false);
+			dialog.SetActive (false);
 		}
 
 		public void OnConnected(){

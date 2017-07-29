@@ -8,6 +8,11 @@ public class BattleClientResourceManager : SingleMonoBehaviour<BattleClientResou
 	//TODO ,以后用ab的方式加载
 	public List<GameObject> prefabs;
 
-	public GameObject basePrefab;
+	public GameObject GetPlantPrefab(int playerId){
+		if(prefabs.Count>playerId){
+			return prefabs[playerId-1];
+		}
+		return prefabs[0];
+	}
 
 }
