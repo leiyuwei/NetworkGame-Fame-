@@ -28,13 +28,14 @@ public class Ball : MonoBehaviour
 			return;
 		}
 		if (collision.gameObject.name.Trim().IndexOf("plant")!=-1) {
-			SoundManager.Instance.PlaySE ();
+			SoundManager.Instance.PlaySE (SoundManager.Instance.se);
 		}
 		ContactPoint2D contactPoint = collision.contacts [0];
 		Vector2 newDir = Vector2.zero;
 		Vector2 curDir = m_preVelocity;
 		if (collision.gameObject.name.IndexOf ("stone") != -1) {
 			Destroy (collision.gameObject);
+			SoundManager.Instance.PlaySE (SoundManager.Instance.hit);
 		} 
 		newDir = Vector2.Reflect (curDir.normalized, contactPoint.normal);
 //		Debug.Log (newDir + ":" + Mathf.Abs (Vector2.Dot (newDir.normalized, new Vector2 (1, 0))));

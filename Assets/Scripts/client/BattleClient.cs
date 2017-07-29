@@ -146,7 +146,6 @@ namespace MultipleBattle
 		public void SendPlayerHandle (PlayerHandle ph)
 		{
 			if (client.isConnected && isBattleBegin) {
-				Debug.Log ("<color=red>" + JsonUtility.ToJson (ph) + "</color>");
 				client.Send (MessageConstant.CLIENT_PLAYER_HANDLE, ph);
 			}
 		}

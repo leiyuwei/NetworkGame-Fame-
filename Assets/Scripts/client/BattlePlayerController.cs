@@ -6,14 +6,15 @@ namespace MultipleBattle
 {
 	public class BattlePlayerController : SingleMonoBehaviour<BattlePlayerController>
 	{
-		Vector2 mPrePos;
+		float mPreX;
 		void Update ()
 		{
 			if (Input.GetMouseButton (0)) {
 				PlayerHandle ph = new PlayerHandle ();
-				if (mPrePos != (Vector2)Input.mousePosition) {
-					mPrePos = (Vector2)Input.mousePosition;
-					ph.mousePos = (Vector2)Input.mousePosition;
+				float x = Mathf.Round(Input.mousePosition.x);
+				if (mPreX != x) {
+					mPreX = x;
+					ph.mousePos = new Vector2 (x,0);
 					ph.playerId = BattleClientController.Instance.playerId;
 					BattleClient.Instance.SendPlayerHandle (ph);
 				}

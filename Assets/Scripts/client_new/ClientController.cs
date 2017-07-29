@@ -19,9 +19,6 @@ namespace Battle
 		protected override void Awake ()
 		{
 			base.Awake ();
-			ball.onBottom = () => {
-				btn_start.gameObject.SetActive(true);
-			};
 		}
 
 		public bool isAuto;

@@ -9,6 +9,7 @@ public class SoundManager : SingleMonoBehaviour<SoundManager> {
 
 	public AudioClip bgm;
 	public AudioClip se;
+	public AudioClip hit;
 
 	public void PlayBGM(){
 		bgmAudioSource.clip = bgm;
@@ -16,8 +17,8 @@ public class SoundManager : SingleMonoBehaviour<SoundManager> {
 		bgmAudioSource.Play ();
 	}
 
-	public void PlaySE(){
-		seAudioSource.PlayOneShot (se);
+	public void PlaySE(AudioClip clip){
+		seAudioSource.PlayOneShot (clip);
 	}
 
 }

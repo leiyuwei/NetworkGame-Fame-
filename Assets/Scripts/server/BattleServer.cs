@@ -18,7 +18,18 @@ namespace MultipleBattle
 		public int MAX_Player = 1;
 		public const string MAX_PLAYER = "MAX_PLAYER";
 		int mCurrentPlayer = 0;
+		int mFrame = 0;
+		float mStartTime;
+		float t;
+		float mNextFrameTime;
 		BattleServerController mBattleServerController;
+		//服务器缓存的操作
+		public Dictionary<int,ServerMessage> mCachedServerMessageDic;
+		[HideInInspector]
+		public ServerMessage currentMessage;
+		[HideInInspector]
+		public List<PlayerHandle> playerHandleList;
+		Dictionary<int,PlayerStatus> mConnections;
 
 		void Awake ()
 		{
@@ -31,22 +42,16 @@ namespace MultipleBattle
 			txt_port.text = " Port:" + port.ToString ();
 			if(txt_ip!=null)
 			txt_ip.text =" IP:" + Network.player.ipAddress;
-			connectionConfig.SendDelay = 1;
-			this.StartServer ();
-			isBattleBegin = false;
-			currentMessage = new ServerMessage ();
-			spawnObjectList = new List<SpawnGameObject> ();
-			playerHandleList = new List<PlayerHandle> ();
-			mCachedServerMessageDic = new Dictionary<int, ServerMessage> ();
-			mConnections = new Dictionary<int, PlayerStatus> ();
-			mCurrentPlayer = 0;
 			mBattleServerController = GetComponent<BattleServerController> ();
+			Reset ();
+			this.StartServer ();
+			connectionConfig.SendDelay = 1;
+			NetworkServer.maxDelay = 0;
 			NetworkServer.RegisterHandler (MessageConstant.CLIENT_READY,OnRecieveClientReady);
 			NetworkServer.RegisterHandler (MessageConstant.CLIENT_PLAYER_HANDLE,OnRecievePlayerHandle);
 			NetworkServer.RegisterHandler (MessageConstant.CLIENT_REQUEST_FRAMES, OnRecievePlayerFrameRequest);
 			NetworkServer.RegisterHandler (MsgType.Connect, OnClientConnect);
 			NetworkServer.RegisterHandler (MsgType.Disconnect, OnClientDisconnect);
-
 			string[] commandLineArgs = Environment.GetCommandLineArgs();
 			for(int i=0;i<commandLineArgs.Length;i++){
 				if(commandLineArgs[i].ToLower().IndexOf("playercount")!=-1){
@@ -62,17 +67,24 @@ namespace MultipleBattle
 					}
 				}
 			}
-
-			NetworkServer.maxDelay = 0;
 			mFrameInterval = 1f / mFrameRate;
 		}
 
-		int mFrame = 0;
-		float mStartTime;
-		float t;
+		void Reset(){
+			isBattleBegin = false;
+			currentMessage = new ServerMessage ();
+			playerHandleList = new List<PlayerHandle> ();
+			mCachedServerMessageDic = new Dictionary<int, ServerMessage> ();
+			mConnections = new Dictionary<int, PlayerStatus> ();
+			mCurrentPlayer = 0;
+			mStartTime = 0;
+			mFrame = 0;
+			t = 0;
+			mNextFrameTime = 0;
+		}
+
 		int mFrameRate = 30;
 		float mFrameInterval;
-		float mNextFrameTime;
 		void Update ()
 		{
 			if(Input.GetKeyDown(KeyCode.P)){
@@ -103,19 +115,6 @@ namespace MultipleBattle
 		void OnGUI(){
 			GUILayout.Label ((mFrame / (Time.realtimeSinceStartup - mStartTime)).ToString());
 		}
-
-		//服务器缓存的操作
-		public Dictionary<int,ServerMessage> mCachedServerMessageDic;
-
-		[HideInInspector]
-		public ServerMessage currentMessage;
-		[HideInInspector]
-		public List<SpawnGameObject> spawnObjectList;
-		[HideInInspector]
-		public List<PlayerHandle> playerHandleList;
-
-		Dictionary<int,PlayerStatus> mConnections;
-
 
 		#region 1.Send
 		//当有玩家加入或者退出或者准备的場合
@@ -164,7 +163,6 @@ namespace MultipleBattle
 		void SetFrameMessage(){
 			currentMessage.frame = mFrame;
 			currentMessage.playerHandles = playerHandleList.ToArray();
-			spawnObjectList = new List<SpawnGameObject> ();
 			playerHandleList = new List<PlayerHandle> ();
 		}
 		#endregion
@@ -190,9 +188,11 @@ namespace MultipleBattle
 			Debug.Log ("OnClientDisconnect");
 			NetworkConnection conn = nm.conn;
 			mConnections.Remove(conn.connectionId);
-			SendPlayerStatus ();
-			if(mConnections.Count==0){
-				UnityEngine.SceneManagement.SceneManager.LoadScene ("Server");
+
+			if (mConnections.Count == 0) {
+				Reset ();
+			} else {
+				SendPlayerStatus ();
 			}
 		}
 
