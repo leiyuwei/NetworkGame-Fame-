@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using MultipleBattle;
 
 
 public class Ball : MonoBehaviour
@@ -21,6 +22,8 @@ public class Ball : MonoBehaviour
 	{
 		if (collision.gameObject.name.Trim () == "bottom") {
 			rigidbody.velocity = Vector2.zero;
+			BattleClient.Instance.Disconnect ();
+			UnityEngine.SceneManagement.SceneManager.LoadScene ("Client");
 			Debug.Log ("Stop");
 			if (onBottom != null) {
 				onBottom ();

@@ -8,8 +8,6 @@ using System;
 
 namespace MultipleBattle
 {
-
-
 	public class BattleClient : SingleMonoBehaviour<BattleClient>
 	{
 		public string defaultIP;
