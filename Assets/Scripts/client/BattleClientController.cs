@@ -21,7 +21,6 @@ namespace MultipleBattle
 		public Dictionary<int,PlayerInfo> players;
 		public Vector2 defaultPlantPos;
 		public Ball ball;
-		public Camera gameCamera;
 
 		protected override void Awake ()
 		{
@@ -57,7 +56,7 @@ namespace MultipleBattle
 				PlayerHandle ph = sm.playerHandles[i];
 				PlayerInfo pi = players [ph.playerId];
 				pi.mousePos = ph.mousePos;
-				pi.plant.position = new Vector2 (gameCamera.ScreenToWorldPoint(pi.mousePos).x,pi.plant.position.y);
+				pi.plant.position = new Vector3(pi.mousePos.x,pi.plant.position.y,0) ;
 			}
 		}
 

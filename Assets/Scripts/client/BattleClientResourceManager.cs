@@ -9,8 +9,9 @@ public class BattleClientResourceManager : SingleMonoBehaviour<BattleClientResou
 	public List<GameObject> prefabs;
 
 	public GameObject GetPlantPrefab(int playerId){
+		playerId = playerId - 1;
 		if(prefabs.Count>playerId){
-			return prefabs[playerId-1];
+			return prefabs[playerId];
 		}
 		return prefabs[0];
 	}
