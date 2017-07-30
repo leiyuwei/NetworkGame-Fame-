@@ -65,7 +65,6 @@
      <Compile Include="Assets\Scripts\messages\MessageConstant.cs" />
      <Compile Include="Assets\Scripts\messages\ServerMessage.cs" />
      <Compile Include="Assets\Scripts\server\BattleServer.cs" />
-     <Compile Include="Assets\Scripts\server\BattleServerController.cs" />
      <Compile Include="Assets\Scripts\server\LocalPositionManager.cs" />
      <Compile Include="Assets\Scripts\sound\SoundManager.cs" />
      <Compile Include="Assets\Scripts\statusmachine\StatusAction.cs" />
@@ -78,7 +77,9 @@
      <Compile Include="Assets\Scripts\unit\actions\UnitMoveAction.cs" />
      <Compile Include="Assets\Scripts\unit\actions\UnitStandByAction.cs" />
      <Compile Include="Assets\Scripts\utility\Jump.cs" />
+     <Compile Include="Assets\Scripts\utility\MethodExtensionForMonoBehaviourTransform.cs" />
      <Compile Include="Assets\Scripts\utility\RandomUtility.cs" />
+     <Compile Include="Assets\Scripts\utility\StringColor.cs" />
      <None Include="Assets\ArtResources\Models\shaders\UnitBase.shader" />
  <Reference Include="UnityEngine.UI">
  <HintPath>/Applications/Unity5.6.2f1/Unity.app/Contents/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>

@@ -18,8 +18,14 @@ public class Ball : MonoBehaviour
 		rigidbody = GetComponent<Rigidbody2D> ();
 	}
 
+	Collision2D mPreCollision2D;
 	public void OnCollisionEnter2D (Collision2D collision)
 	{
+		if (mPreCollision2D == collision) {
+			Debug.Log (collision.ToString().AquaColor());
+			return;
+		}
+		mPreCollision2D = collision;
 		if (collision.gameObject.name.Trim () == "bottom") {
 			rigidbody.velocity = Vector2.zero;
 			BattleClient.Instance.Disconnect ();
@@ -46,6 +52,7 @@ public class Ball : MonoBehaviour
 			newDir = new Vector2 (newDir.x < 0 ? newDir.x + 0.3f : newDir.x - 0.3f, newDir.y);
 		}
 		rigidbody.velocity = newDir.normalized * speed;
+		Debug.Log (rigidbody.velocity);
 		m_preVelocity = rigidbody.velocity;
 	}
 
@@ -55,6 +62,6 @@ public class Ball : MonoBehaviour
 		transform.position = new Vector3 (0, -3.8f, 0);
 		rigidbody.velocity = new Vector2 (1, 1).normalized * speed;
 		m_preVelocity = rigidbody.velocity;
+			
 	}
-
 }

@@ -15,14 +15,13 @@ namespace MultipleBattle
 		public Text txt_debug;
 		public int port = 8080;
 		public bool isBattleBegin;
-		public int MAX_Player = 1;
+		public static int player_count = 1;
 		public const string MAX_PLAYER = "MAX_PLAYER";
 		int mCurrentPlayer = 0;
 		int mFrame = 0;
 		float mStartTime;
 		float t;
 		float mNextFrameTime;
-		BattleServerController mBattleServerController;
 		//服务器缓存的操作
 		public Dictionary<int,ServerMessage> mCachedServerMessageDic;
 		[HideInInspector]
@@ -33,16 +32,12 @@ namespace MultipleBattle
 
 		void Awake ()
 		{
-			if(PlayerPrefs.HasKey(MAX_PLAYER)){
-				MAX_Player = PlayerPrefs.GetInt (MAX_PLAYER);
-			}
-			txt_maxPlayer.text = MAX_Player.ToString ();
+			txt_maxPlayer.text = player_count.ToString ();
 			this.networkPort = port;
 			if(txt_port!=null)
 			txt_port.text = " Port:" + port.ToString ();
 			if(txt_ip!=null)
 			txt_ip.text =" IP:" + Network.player.ipAddress;
-			mBattleServerController = GetComponent<BattleServerController> ();
 			Reset ();
 			this.StartServer ();
 			connectionConfig.SendDelay = 1;
@@ -60,14 +55,28 @@ namespace MultipleBattle
 						int playerCount = 0;
 						if(int.TryParse(countStrs[1],out playerCount)){
 							if (playerCount > 0) {
-								MAX_Player = playerCount;
-								txt_maxPlayer.text = MAX_Player.ToString ();
+								player_count = playerCount;
+								txt_maxPlayer.text = player_count.ToString ();
 							}
 						}
 					}
 				}
 			}
 			mFrameInterval = 1f / mFrameRate;
+		}
+
+		public static int GetMaxNum(){
+			int max = 1;
+			if(PlayerPrefs.HasKey(MAX_PLAYER)){
+				return Mathf.Min(max,PlayerPrefs.GetInt (MAX_PLAYER));
+			}
+			return max;
+		}
+
+		public static void SetMaxNum(int num){
+			PlayerPrefs.SetInt (MAX_PLAYER, num);
+			PlayerPrefs.Save ();
+			Debug.Log (PlayerPrefs.GetInt (MAX_PLAYER));
 		}
 
 		void Reset(){
@@ -87,21 +96,6 @@ namespace MultipleBattle
 		float mFrameInterval;
 		void Update ()
 		{
-			if(Input.GetKeyDown(KeyCode.P)){
-				MAX_Player++;
-				MAX_Player = Mathf.Min (10, MAX_Player);
-				txt_maxPlayer.text = MAX_Player.ToString ();
-				PlayerPrefs.SetInt (MAX_PLAYER, MAX_Player);
-				PlayerPrefs.Save ();
-			}
-			if(Input.GetKeyDown(KeyCode.O)){
-				MAX_Player--;
-				MAX_Player = Mathf.Max (1, MAX_Player);
-				txt_maxPlayer.text = MAX_Player.ToString ();
-				PlayerPrefs.SetInt (MAX_PLAYER, MAX_Player);
-				PlayerPrefs.Save ();
-			}
-
 			if (!isBattleBegin) {
 				return;
 			}
@@ -172,7 +166,7 @@ namespace MultipleBattle
 		{
 			Debug.Log ("OnClientConnect");
 			NetworkConnection conn = nm.conn;
-			if (isBattleBegin || mConnections.Count >= MAX_Player) {
+			if (isBattleBegin || mConnections.Count >= player_count) {
 				conn.Disconnect ();
 			}else {
 				PlayerStatus ps = new PlayerStatus ();
@@ -208,10 +202,9 @@ namespace MultipleBattle
 					count++;
 				} 
 			}
-			if (count >= MAX_Player) {
+			if (count >= player_count) {
 				isBattleBegin = true;
 				SendBattleBegin ();
-				mBattleServerController.BattleBegin ();
 				mStartTime = Time.realtimeSinceStartup;
 				mNextFrameTime = Time.realtimeSinceStartup;
 			} 

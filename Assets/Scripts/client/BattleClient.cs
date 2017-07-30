@@ -95,6 +95,7 @@ namespace MultipleBattle
 			//执行物理帧
 			if (mPhysicFrameRemain > 0) {
 				mPhysicFrameRemain--;
+				UpdateFixedFrame ();
 			}
 		}
 
@@ -108,7 +109,7 @@ namespace MultipleBattle
 				if (mCurrentServerMessage.playerHandles.Length > 0)
 					RecordMessage (mCurrentServerMessage);
 				mRunableMessages.Remove (mFrame);
-				BattleClientController.Instance.LogicUpdate (mCurrentServerMessage);
+				BattleClientController.Instance.UpdateFrame (mCurrentServerMessage);
 				mFrame++;
 				mPhysicFrameRemain = 33;
 				Time.timeScale = 1;
@@ -118,6 +119,9 @@ namespace MultipleBattle
 			}
 		}
 
+		void UpdateFixedFrame(){
+			BattleClientController.Instance.UpdateFixedFrame ();
+		}
 
 		#region 1.Send
 

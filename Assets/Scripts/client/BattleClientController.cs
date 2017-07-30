@@ -45,19 +45,24 @@ namespace MultipleBattle
 
 		int mFrame;
 
-		public void LogicUpdate (ServerMessage sm)
+		public void UpdateFrame (ServerMessage sm)
 		{
 			mFrame = sm.frame;
-			UpdatePlayers (sm);
-		}
-
-		void UpdatePlayers(ServerMessage sm){
 			for(int i=0;i<sm.playerHandles.Length;i++){
 				PlayerHandle ph = sm.playerHandles[i];
 				PlayerInfo pi = players [ph.playerId];
 				pi.mousePos = ph.mousePos;
-				pi.plant.position = new Vector3(pi.mousePos.x,pi.plant.position.y,0) ;
+				pi.plant.position = new Vector3 (pi.mousePos .x,pi.plant.position.y,0);
+//				pi.plant.GetComponent<Rigidbody2D> ().velocity = new Vector3 (pi.mousePos.x - pi.plant.position.x, 0).normalized * 10;
 			}
+		}
+
+		public void UpdateFixedFrame(){
+//			foreach(PlayerInfo playerInfo in players.Values){
+//				if (Mathf.Abs(playerInfo.plant.position.x - playerInfo.mousePos.x) <= 0.01f * 10) {
+//					playerInfo.plant.GetComponent<Rigidbody2D> ().velocity = Vector2.zero;
+//				}
+//			}
 		}
 
 		public void CreatePlayers (CreatePlayer cp)
