@@ -16,6 +16,8 @@ namespace MultipleBattle
 		public Button btn_replay;
 		public Button btn_save;
 		public Button btn_disconnect;
+		public Text txt_frame;
+		public Text txt_frame1;
 //		public GridLayoutGroup grid_saves;
 //		public GameObject grid_save_item_prefab;
 //		public List<GameObject> grid_save_items;

@@ -57,12 +57,15 @@ namespace MultipleBattle
 			}
 		}
 
+		int frame;
 		public void UpdateFixedFrame(){
 //			foreach(PlayerInfo playerInfo in players.Values){
 //				if (Mathf.Abs(playerInfo.plant.position.x - playerInfo.mousePos.x) <= 0.01f * 10) {
 //					playerInfo.plant.GetComponent<Rigidbody2D> ().velocity = Vector2.zero;
 //				}
 //			}
+			frame++;
+			BattleClientUIManager.Instance.txt_frame.text = frame.ToString ();
 		}
 
 		public void CreatePlayers (CreatePlayer cp)

@@ -59,7 +59,7 @@ namespace MultipleBattle
 		//当前执行中的关键帧
 		ServerMessage mCurrentServerMessage;
 		//当前执行的关键帧番号
-		int mFrame = 0;
+		public int mFrame = 0;
 		//可执行的最大帧番号
 		int mMaxRunableFrame = 0;
 		//接收到到最大帧番号
@@ -111,6 +111,7 @@ namespace MultipleBattle
 				mRunableMessages.Remove (mFrame);
 				BattleClientController.Instance.UpdateFrame (mCurrentServerMessage);
 				mFrame++;
+				BattleClientUIManager.Instance.txt_frame1.text = mFrame.ToString ();
 				mPhysicFrameRemain = 33;
 				Time.timeScale = 1;
 			} else {
