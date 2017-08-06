@@ -17,10 +17,8 @@ namespace MultipleBattle
 		public bool isBattleBegin;
 		public static int player_count = 1;
 		public const string MAX_PLAYER = "MAX_PLAYER";
-		int mCurrentPlayer = 0;
 		int mFrame = 0;
 		float mStartTime;
-		float t;
 		float mNextFrameTime;
 		//服务器缓存的操作
 		public Dictionary<int,ServerMessage> mCachedServerMessageDic;
@@ -85,10 +83,8 @@ namespace MultipleBattle
 			playerHandleList = new List<PlayerHandle> ();
 			mCachedServerMessageDic = new Dictionary<int, ServerMessage> ();
 			mConnections = new Dictionary<int, PlayerStatus> ();
-			mCurrentPlayer = 0;
 			mStartTime = 0;
 			mFrame = 0;
-			t = 0;
 			mNextFrameTime = 0;
 		}
 

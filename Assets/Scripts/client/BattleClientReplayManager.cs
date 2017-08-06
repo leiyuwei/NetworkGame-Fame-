@@ -12,8 +12,9 @@ namespace MultipleBattle
 		public bool isBegin;
 		int mFrame;
 
-		void Awake ()
+		protected override void Awake ()
 		{
+			base.Awake ();
 			isBegin = false;
 			mFrame = 0;
 			mFrameInterval = 1f / mFrameRate;

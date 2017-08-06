@@ -15,8 +15,8 @@ public class MapEditTool : SingleMonoBehaviour<MapEditTool> {
 	public GameObject ground;
 
 
-	void Awake(){
-	
+	protected override void Awake(){
+		base.Awake ();
 	}
 
 	void Update () {

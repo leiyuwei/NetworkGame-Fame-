@@ -12,16 +12,11 @@ namespace MultipleBattle
 		public InputField input_port;
 		public Button btn_connect;
 		public Button btn_ready;
-
 		public Button btn_replay;
 		public Button btn_save;
 		public Button btn_disconnect;
 		public Text txt_frame;
 		public Text txt_frame1;
-//		public GridLayoutGroup grid_saves;
-//		public GameObject grid_save_item_prefab;
-//		public List<GameObject> grid_save_items;
-
 		public GridLayoutGroup grid_players;
 		public GameObject grid_players_item_prefab;
 		public List<GameObject> grid_players_items;
@@ -52,15 +47,15 @@ namespace MultipleBattle
 			input_ip.gameObject.SetActive (false);
 			input_port.gameObject.SetActive (false);
 			btn_connect.gameObject.SetActive (false);
-			this.btn_replay.gameObject.SetActive (false);
+			btn_replay.gameObject.SetActive (false);
 		}
 
 		void Save(){
-			BattleClientReplayManager.Instance.SaveRecord ();
+//			BattleClientReplayManager.Instance.SaveRecord ();
 		}
 
 		void Replay(){
-			BattleClientReplayManager.Instance.Replay ();
+//			BattleClientReplayManager.Instance.Replay ();
 			btn_replay.gameObject.SetActive (false);
 			input_ip.gameObject.SetActive (false);
 			input_port.gameObject.SetActive (false);

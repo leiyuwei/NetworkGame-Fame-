@@ -2,23 +2,29 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SoundManager : SingleMonoBehaviour<SoundManager> {
+namespace MultipleBattle
+{
+	public class SoundManager : SingleMonoBehaviour<SoundManager>
+	{
 
-	public AudioSource bgmAudioSource;
-	public AudioSource seAudioSource;
+		public AudioSource bgmAudioSource;
+		public AudioSource seAudioSource;
 
-	public AudioClip bgm;
-	public AudioClip se;
-	public AudioClip hit;
+		public AudioClip bgm;
+		public AudioClip se;
+		public AudioClip hit;
 
-	public void PlayBGM(){
-		bgmAudioSource.clip = bgm;
-		bgmAudioSource.loop = true;
-		bgmAudioSource.Play ();
+		public void PlayBGM ()
+		{
+			bgmAudioSource.clip = bgm;
+			bgmAudioSource.loop = true;
+			bgmAudioSource.Play ();
+		}
+
+		public void PlaySE (AudioClip clip)
+		{
+			seAudioSource.PlayOneShot (clip);
+		}
+
 	}
-
-	public void PlaySE(AudioClip clip){
-		seAudioSource.PlayOneShot (clip);
-	}
-
 }
