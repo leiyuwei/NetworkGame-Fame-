@@ -14,7 +14,7 @@ namespace MultipleBattle
 		public int defaultPort;
 		public bool isBattleBegin;
 		NetworkClient client;
-		//缓存收到的帧
+		//一時受信したのフラームを保存される処（临时保存收到的帧）
 		Dictionary<int,ServerMessage> mCachedMessages;
 		//按序储存的帧,这个的作用在于，当网络出现异常，或者机器出现异常，
 		//挤压在这里有多帧的话，可以加快客户端游戏逻辑来追上实际进度。
@@ -88,11 +88,11 @@ namespace MultipleBattle
 			#endregion
 			if (!isBattleBegin)
 				return;
-			//执行逻辑
+			//論理が実行する(执行逻辑)
 			if (mPhysicFrameRemain == 0) {
 				UpdateFrame ();
 			}
-			//执行物理帧
+			//物理フレームを実行する(执行物理帧)
 			if (mPhysicFrameRemain > 0) {
 				mPhysicFrameRemain--;
 				UpdateFixedFrame ();
