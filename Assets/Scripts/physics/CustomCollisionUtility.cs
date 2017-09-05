@@ -21,42 +21,74 @@ namespace CustomPhysics2D
 		}
 
 		//optimized.
-		public static bool IsCircleAndBox (CustomPhysics2D.CustomCircleCollider2D circle, CustomPhysics2D.CustomBoxCollider2D box, out Vector2 hit)
+		//圆心到每条边到垂线交点
+		public static bool IsCircleAndBox (CustomPhysics2D.CustomCircleCollider2D circle, CustomPhysics2D.CustomBoxCollider2D box, out Vector2 hit,out Vector2 normal )
 		{
-			Vector2 min = box.mBoxCollider2D.bounds.min;
-			Vector2 max = box.mBoxCollider2D.bounds.max;
+			//TODO 需要经过旋转
+			Vector2 min = (Vector2)box.mBoxCollider2D.bounds.min;// + box.GetCenter ();
+			Vector2 max = (Vector2)box.mBoxCollider2D.bounds.max;// + box.GetCenter ();
+			normal = Vector2.zero;
 			hit = Vector2.zero;
-			Vector2 verticalPos = GetVerticalForPointAndLine (circle.GetCenter (), min, new Vector2 (min.x, max.y));
-			if (IsPointOnLineSegment (verticalPos, min, new Vector2 (min.x, max.y))) {
+			Vector2 verticalPos = MathUtility.GetVerticalForPointAndLine (circle.GetCenter (), min, new Vector2 (min.x, max.y));
+			if (MathUtility.IsPointOnLineSegment(verticalPos,min, new Vector2 (min.x, max.y)) && (verticalPos - circle.GetCenter()).sqrMagnitude <= circle.circle.radius * circle.circle.radius) {
+				normal = MathUtility.Rotate(min - new Vector2 (min.x, max.y),90).normalized;
 				hit = verticalPos;
 				return true;
 			}
-			verticalPos = GetVerticalForPointAndLine (circle.GetCenter (), new Vector2 (min.x, max.y), max);
-			if (IsPointOnLineSegment (verticalPos, min, new Vector2 (min.x, max.y))) {
+//			CreateDebuger (circle.GetCenter (),min, new Vector2 (min.x, max.y),verticalPos);
+
+			verticalPos = MathUtility.GetVerticalForPointAndLine (circle.GetCenter (), new Vector2 (min.x, max.y), max);
+			if (MathUtility.IsPointOnLineSegment(verticalPos, new Vector2 (min.x, max.y), max) &&  (verticalPos - circle.GetCenter()).sqrMagnitude <= circle.circle.radius * circle.circle.radius) {
+				normal = MathUtility.Rotate(new Vector2 (min.x, max.y) -  max,90).normalized;
 				hit = verticalPos;
 				return true;
 			}
-			verticalPos = GetVerticalForPointAndLine (circle.GetCenter (), max, new Vector2 (max.x, min.y));
-			if (IsPointOnLineSegment (verticalPos, min, new Vector2 (min.x, max.y))) {
+//			CreateDebuger (circle.GetCenter (), new Vector2 (min.x, max.y), max,verticalPos);
+
+			verticalPos = MathUtility.GetVerticalForPointAndLine (circle.GetCenter (), max, new Vector2 (max.x, min.y));
+			if (MathUtility.IsPointOnLineSegment(verticalPos, max, new Vector2 (max.x, min.y)) && (verticalPos - circle.GetCenter()).sqrMagnitude <= circle.circle.radius * circle.circle.radius) {
+				normal = MathUtility.Rotate(max -new Vector2 (max.x, min.y),90).normalized;
 				hit = verticalPos;
 				return true;
 			}
-			verticalPos = GetVerticalForPointAndLine (circle.GetCenter (), new Vector2 (max.x, min.y), min);
-			if (IsPointOnLineSegment (verticalPos, min, new Vector2 (min.x, max.y))) {
+//			CreateDebuger (circle.GetCenter (),max, new Vector2 (max.x, min.y),verticalPos);
+
+			verticalPos = MathUtility.GetVerticalForPointAndLine (circle.GetCenter (), new Vector2 (max.x, min.y), min);
+			if (MathUtility.IsPointOnLineSegment(verticalPos,new Vector2 (max.x, min.y), min) && (verticalPos - circle.GetCenter()).sqrMagnitude <= circle.circle.radius * circle.circle.radius) {
+				normal = MathUtility.Rotate(new Vector2 (max.x, min.y) - min,90).normalized;
 				hit = verticalPos;
 				return true;
 			}
+//			CreateDebuger (circle.GetCenter (),new Vector2 (max.x, min.y), min,verticalPos);
+
 			hit = Vector2.zero;
 			return false;
 		}
 
-		static bool CheckIntersects(Bounds box1,Bounds box2){
+		static void CreateDebuger(Vector2 pos0,Vector2 pos1,Vector2 pos2,Vector2 pos3){
+			TestDebuger td = GameObject.FindObjectOfType<TestDebuger> ();
+			if (td == null) {
+				GameObject go = new GameObject ();
+				td = go.AddComponent<TestDebuger> ();
+			}
+			td.pos0 = pos0;
+			td.pos1 = pos1;
+			td.pos2 = pos2;
+			td.pos3 = pos3;
+		}
+
+		//チェク二つAABBの交差か
+		static bool CheckAABBIntersects (Bounds aabb1, Bounds aabb2)
+		{
 			//1.Bounds.Intersects (bounds1)
-			//2.
-			if (box1.min.x > box2.max.x) return false;
-			if (box1.max.x < box2.min.x) return false;
-			if (box1.min.y > box2.max.y) return false;
-			if (box1.max.y < box2.min.y) return false;
+			if (aabb1.min.x > aabb2.max.x)
+				return false;
+			if (aabb1.max.x < aabb2.min.x)
+				return false;
+			if (aabb1.min.y > aabb2.max.y)
+				return false;
+			if (aabb1.max.y < aabb2.min.y)
+				return false;
 			return true;
 		}
 
@@ -64,7 +96,7 @@ namespace CustomPhysics2D
 		public static bool IsCollideBoxAndBox (CustomBoxCollider2D box0, CustomBoxCollider2D box1)
 		{
 			//AABB
-			if(!CheckIntersects(box0.mBoxCollider2D.bounds,box1.mBoxCollider2D.bounds)){//  !.Intersects(box1.mBoxCollider2D.bounds)){
+			if (!CheckAABBIntersects (box0.mBoxCollider2D.bounds, box1.mBoxCollider2D.bounds)) {//  !.Intersects(box1.mBoxCollider2D.bounds)){
 				return false;
 			}
 			Vector2 pos0 = box0.transform.TransformPoint (box0.GetCenter () + new Vector2 (-box0.mBoxCollider2D.size.x, -box0.mBoxCollider2D.size.y) * 0.5f);
@@ -80,8 +112,8 @@ namespace CustomPhysics2D
 			Vector2 hit;
 			for (int i = 0; i < boxVerts.Length; i++) {
 				for (int j = 0; j < boxVerts1.Length; j++) {
-					bool isIntersect = IsLineSegmentAndLineSegment (boxVerts [i], boxVerts [(i + 1) % boxVerts.Length], boxVerts1 [j], boxVerts1 [(j + 1) / boxVerts1.Length], out hit);
-					if(isIntersect){
+					bool isIntersect = MathUtility.IsLineSegmentAndLineSegment (boxVerts [i], boxVerts [(i + 1) % boxVerts.Length], boxVerts1 [j], boxVerts1 [(j + 1) / boxVerts1.Length], out hit);
+					if (isIntersect) {
 						return true;
 					}
 				}
@@ -104,81 +136,11 @@ namespace CustomPhysics2D
 			return null;
 		}
 
-		//求点到直线的交点
-		//注释处为推理过程（代数法）
-		//先求出斜率a，再求出常量b
-		public static Vector2 GetVerticalForPointAndLine (Vector2 point, Vector2 start, Vector2 end)
+		public static Vector2 GetVerticalLine (Vector2 pos)
 		{
-			//二個特別な場合
-			if (start.x - end.x == 0) {
-				return new Vector2 (start.x, point.y);
-			}
-
-			if (start.y - end.y == 0) {
-				return new Vector2 (point.x, start.y);
-			}
-
-			//y = ax + b;
-			//start.y = start.x * a + b;
-			//end.y = end.x * a + b;
-			float a = (start.y - end.y) / (start.x - end.x);
-			float b = start.y - start.x * a;
-			//y = a * x + b；
-
-			float a0 = (start.x - end.x) / (start.y - end.y);
-			float b0 = point.y - point.x * a0;
-			//y = a0 * x + b0
-
-			//0 = (a0 - a) * x + b0 -b;
-			float x0 = (b - b0) / (a0 - a);
-			float y0 = a * x0 + b;
-			return new Vector2 (x0, y0);
+			return Vector2.zero;
 		}
 
-		//点是否在线段上
-		public static bool IsPointOnLineSegment (Vector2 point, Vector2 start, Vector2 end)
-		{
-			float distance = (start.x - end.x) * (start.x - end.x) + (start.y - end.y) * (start.y - end.y);
-			float dis0 = (point.x - end.x) * (point.x - end.x) + (point.y - end.y) * (point.y - end.y);
-			float dis1 = (point.x - start.x) * (point.x - start.x) + (point.y - start.y) * (point.y - start.y);
-			return distance == dis0 + dis1;
-		}
-
-		//二つ線の交点（Algebraic）
-		public static bool IsLineSegmentAndLineSegment (Vector2 start0, Vector2 end0, Vector2 start1, Vector2 end1, out Vector2 hit)
-		{
-			Vector2 delta0 = start0 - end0;
-			/**
-			 * 推理には
-			 * y = a0x + b0;
-			**/
-			float a0 = delta0.y / delta0.x;
-			float b0 = start0.y - start0.x * a0;
-			Vector2 delta1 = start1 - end1;
-			/**
-			 * 推理には
-			 * y = a1x + b1;
-			**/
-			float a1 = (start1.y - end1.y) / (start1.x - end1.x);
-			float b1 = start1.y - start1.x * a1;
-			//平行線
-			if (a0 == a1) {
-				hit = Vector2.zero;
-				return false;
-			}
-			/**
-			 * 推理には
-			 * y = a0 * x + b0;
-			 * y = a1 * x + b1;
-			 * 0 = (a0-a1) * x + (b0 - b1);
-			 * x = (b1 - b0) / (a0 - a1);
-			 * y = x * a0 + b0;
-			**/	
-			float x0 = (b1 - b0) / (a0 - a1);
-			float y0 = x0 * a0 + b0;
-			hit = new Vector2 (x0, y0);
-			return true;
-		}
 
 	}
 }

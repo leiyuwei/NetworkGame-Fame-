@@ -60,6 +60,7 @@
      <Compile Include="Assets\Scripts\editor_tools\GroundPrefabGrid.cs" />
      <Compile Include="Assets\Scripts\editor_tools\MapEditTool.cs" />
      <Compile Include="Assets\Scripts\main\MainManager.cs" />
+     <Compile Include="Assets\Scripts\math\MathUtility.cs" />
      <Compile Include="Assets\Scripts\messages\ActionConstant.cs" />
      <Compile Include="Assets\Scripts\messages\ClientMessage.cs" />
      <Compile Include="Assets\Scripts\messages\MessageConstant.cs" />
@@ -70,7 +71,13 @@
      <Compile Include="Assets\Scripts\physics\CustomColliderManager.cs" />
      <Compile Include="Assets\Scripts\physics\CustomCollisionUtility.cs" />
      <Compile Include="Assets\Scripts\physics\test\CheckIntersect.cs" />
+     <Compile Include="Assets\Scripts\physics\test\TestCustomCircleAndBox.cs" />
+     <Compile Include="Assets\Scripts\physics\test\TestCustomLineLineIntersect.cs" />
+     <Compile Include="Assets\Scripts\physics\test\TestCustomRotate.cs" />
+     <Compile Include="Assets\Scripts\physics\test\TestCustomVerticalIntersect.cs" />
+     <Compile Include="Assets\Scripts\physics\test\TestDebuger.cs" />
      <Compile Include="Assets\Scripts\physics\test\TestListAndHashSet.cs" />
+     <Compile Include="Assets\Scripts\physics\test\TestPointOnLineSegment.cs" />
      <Compile Include="Assets\Scripts\server\BattleServer.cs" />
      <Compile Include="Assets\Scripts\server\LocalPositionManager.cs" />
      <Compile Include="Assets\Scripts\sound\SoundManager.cs" />

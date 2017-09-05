@@ -12,7 +12,7 @@ namespace CustomPhysics2D
 
 	public abstract class CustomCollider2D : MonoBehaviour
 	{
-		
+		public Vector3 direct;
 		public UnityEngine.Collider2D col2D;
 		//contants效率高（所花时间是List的1/700，相差700毫秒，对性能影响较大）（主要原因,optimized），Remove效率比List高（次要原因）。（10000个int）
 		protected HashSet<CustomCollider2D> exsitingColliders;
@@ -29,7 +29,6 @@ namespace CustomPhysics2D
 			exsitingColliders = new HashSet<CustomCollider2D> ();
 			exsitingColliderList = new List<CustomCollider2D> ();
 			col2D = GetComponent<UnityEngine.Collider2D> ();
-			Debug.Log (this.GetType ().ToString());
 			switch(this.GetType ().ToString()){
 			case "CustomPhysics2D.CustomCircleCollider2D":
 				type = Collider2DType.CircleCollider2D;
@@ -38,11 +37,6 @@ namespace CustomPhysics2D
 				type = Collider2DType.BoxCollider2D;
 				break;
 			}
-		}
-
-		public virtual bool CheckCollision (CustomCollider2D other)
-		{
-			return false;
 		}
 
 		public virtual Vector2 GetCenter ()
@@ -55,11 +49,12 @@ namespace CustomPhysics2D
 			return exsitingColliders.Contains (other);
 		}
 
-		public virtual void OnColliderEnter (CustomCollider2D other)
+		public virtual void OnColliderEnter (CustomCollider2D other,Vector2 normal)
 		{
 			if (!IsColliderExisting (other)) {
 				exsitingColliders.Add (other);
 				exsitingColliderList.Add (other);
+				Debug.Log (string.Format("{0} entered!",other));
 			}
 		}
 
@@ -75,7 +70,22 @@ namespace CustomPhysics2D
 			if (IsColliderExisting (other)) {
 				exsitingColliders.Remove (other);
 				exsitingColliderList.Remove (other);
+				Debug.Log (string.Format("{0} exit!",other));
 			}
+		}
+
+		public virtual bool CheckCollision (CustomCollider2D other,out Vector2 normal)
+		{
+			normal = Vector2.zero;
+			return false;
+		}
+
+		public virtual void CheckCollisionEnter(){
+		
+		}
+
+		public virtual void CheckCollisionExit(){
+			
 		}
 
 	}

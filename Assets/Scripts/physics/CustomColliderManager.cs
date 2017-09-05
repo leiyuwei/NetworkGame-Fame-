@@ -16,13 +16,22 @@ namespace CustomPhysics2D
 
 		void FixedUpdate ()
 		{
+			//Collider Moving.
+			for(int i = 0; i < colliders.Count; i++){
+				CustomCollider2D col = colliders [i];
+				col.transform.position += (col.direct * Time.fixedDeltaTime);
+			}
+
+			//Check Collision Enter.
 			for (int i = 0; i < colliders.Count; i++) {
 				CustomCollider2D col = colliders [i];
-				for (int j = 0; j < colliders.Count; j++) {
-					if (col != colliders [j]) {
-						col.CheckCollision (colliders [j]);
-					}
-				}
+				col.CheckCollisionEnter ();
+			}
+
+			//Check Collision Exit.
+			for (int i = 0; i < colliders.Count; i++) {
+				CustomCollider2D col = colliders [i];
+				col.CheckCollisionExit ();
 			}
 		}
 	}

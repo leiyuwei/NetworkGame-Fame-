@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CustomPhysics2D
 {
-	[RequireComponent(typeof(UnityEngine.CircleCollider2D))]
+	[RequireComponent (typeof(UnityEngine.CircleCollider2D))]
 	public class CustomCircleCollider2D : CustomCollider2D
 	{
 		public UnityEngine.CircleCollider2D circle;
@@ -15,27 +15,45 @@ namespace CustomPhysics2D
 			circle = GetComponent<UnityEngine.CircleCollider2D> ();
 		}
 
-		public override bool CheckCollision (CustomCollider2D other)
+		public override bool CheckCollision (CustomCollider2D other,out Vector2 normal)
 		{
 			bool isColl = false;
-			switch(other.type){
+			normal = Vector2.zero;
+			switch (other.type) {
 			case Collider2DType.CircleCollider2D:
-				Debug.Log (other);
-				isColl = CustomCollisionUtility.IsCircleAndCircle (this,(CustomCircleCollider2D)other);
+				isColl = CustomCollisionUtility.IsCircleAndCircle (this, (CustomCircleCollider2D)other);
 				break;
 			case Collider2DType.BoxCollider2D:
 				Vector2 hit;
-				isColl = CustomCollisionUtility.IsCircleAndBox (this, (CustomBoxCollider2D)other,out hit);
-				if(isColl){
-					Debug.Log ("hit:" + hit);
-				}
+				isColl = CustomCollisionUtility.IsCircleAndBox (this, (CustomBoxCollider2D)other, out hit, out normal);
 				break;
 			}
 			return isColl;
 		}
 
+		public override void CheckCollisionEnter ()
+		{
+			for (int i = 0; i < CustomColliderManager.Instance.colliders.Count; i++) {
+				CustomCollider2D other = CustomColliderManager.Instance.colliders [i];
+				if (other != this) {
+					Vector2 normal = Vector2.zero;
+					if (CheckCollision (other,out normal)) {
+						OnColliderEnter (other,normal);
+					}
+				}
+			}
+		}
 
-
+		public override void CheckCollisionExit ()
+		{
+			for (int i = 0; i < this.exsitingColliderList.Count; i++) {
+				CustomCollider2D other = exsitingColliderList [i];
+				Vector2 normal = Vector2.zero;
+				if (!CheckCollision (other,out normal)) {
+					OnColliderExit (other);
+				}
+			}
+		}
 
 	}
 
