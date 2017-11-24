@@ -30,8 +30,8 @@ namespace MultipleBattle
 			#if UNITY_STANDALONE
 			Screen.SetResolution(540,960,false);
 			#endif
-			txt_max_num.text = BattleServer.GetMaxNum ().ToString ();
-			if (BattleServer.GetMaxNum () == 1)
+			txt_max_num.text = NetConstant.MaxNum.ToString ();
+			if (NetConstant.MaxNum == 1)
 				txt_max_desc.text = "Single";
 			else
 				txt_max_desc.text = "Multiple";
@@ -49,18 +49,18 @@ namespace MultipleBattle
 				container_server_config.SetActive (true);
 			});
 			btn_add.onClick.AddListener (() => {
-				int num = BattleServer.GetMaxNum ();
+				int num = NetConstant.MaxNum;
 				num++;
 				num = Mathf.Clamp (num, 1, 2);
-				BattleServer.player_count = num;
+				NetConstant.player_count = num;
 				txt_max_num.text = num.ToString ();
 				txt_max_desc.text = "Multiple";
 			});
 			btn_remove.onClick.AddListener (() => {
-				int num = BattleServer.GetMaxNum ();
+				int num = NetConstant.MaxNum;
 				num--;
 				num = Mathf.Clamp (num, 1, 2);
-				BattleServer.player_count = num;
+				NetConstant.player_count = num;
 				txt_max_num.text = num.ToString ();
 				txt_max_desc.text = "Single";
 			});

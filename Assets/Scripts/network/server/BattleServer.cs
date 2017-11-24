@@ -7,35 +7,36 @@ using System;
 
 namespace MultipleBattle
 {
+	//TODO 保存されるメセージが必要だそうです
 	public class BattleServer : NetworkManager
 	{
+		#region debug用Text.
 		public Text txt_ip;
 		public Text txt_port;
 		public Text txt_maxPlayer;
 		public Text txt_debug;
-		public int port = 8080;
+		#endregion
+
 		public bool isBattleBegin;
-		public static int player_count = 1;
-		public const string MAX_PLAYER = "MAX_PLAYER";
+		//送信したフレーム号。
 		int mFrame = 0;
 		float mStartTime;
 		float mNextFrameTime;
-		//服务器缓存的操作
-		public Dictionary<int,ServerMessage> mCachedServerMessageDic;
 		[HideInInspector]
 		public ServerMessage currentMessage;
 		[HideInInspector]
 		public List<PlayerHandle> playerHandleList;
 		Dictionary<int,PlayerStatus> mConnections;
+		float mFrameInterval;
 
 		void Awake ()
 		{
-			txt_maxPlayer.text = player_count.ToString ();
-			this.networkPort = port;
+			txt_maxPlayer.text = NetConstant.player_count.ToString ();
+			this.networkPort = NetConstant.listene_port;
 			if(txt_port!=null)
-			txt_port.text = " Port:" + port.ToString ();
+				txt_port.text = " Port:" + this.networkPort.ToString ();
 			if(txt_ip!=null)
-			txt_ip.text =" IP:" + Network.player.ipAddress;
+				txt_ip.text =" IP:" + Network.player.ipAddress;
 			Reset ();
 			this.StartServer ();
 			connectionConfig.SendDelay = 1;
@@ -53,43 +54,26 @@ namespace MultipleBattle
 						int playerCount = 0;
 						if(int.TryParse(countStrs[1],out playerCount)){
 							if (playerCount > 0) {
-								player_count = playerCount;
-								txt_maxPlayer.text = player_count.ToString ();
+								NetConstant.player_count = playerCount;
+								txt_maxPlayer.text = NetConstant.player_count.ToString ();
 							}
 						}
 					}
 				}
 			}
-			mFrameInterval = 1f / mFrameRate;
-		}
-
-		public static int GetMaxNum(){
-			int max = 1;
-			if(PlayerPrefs.HasKey(MAX_PLAYER)){
-				return Mathf.Min(max,PlayerPrefs.GetInt (MAX_PLAYER));
-			}
-			return max;
-		}
-
-		public static void SetMaxNum(int num){
-			PlayerPrefs.SetInt (MAX_PLAYER, num);
-			PlayerPrefs.Save ();
-			Debug.Log (PlayerPrefs.GetInt (MAX_PLAYER));
+			mFrameInterval = 1f / NetConstant.FRAME_RATE;
 		}
 
 		void Reset(){
 			isBattleBegin = false;
 			currentMessage = new ServerMessage ();
 			playerHandleList = new List<PlayerHandle> ();
-			mCachedServerMessageDic = new Dictionary<int, ServerMessage> ();
 			mConnections = new Dictionary<int, PlayerStatus> ();
 			mStartTime = 0;
 			mFrame = 0;
 			mNextFrameTime = 0;
 		}
 
-		int mFrameRate = 30;
-		float mFrameInterval;
 		void Update ()
 		{
 			if (!isBattleBegin) {
@@ -102,12 +86,9 @@ namespace MultipleBattle
 			}
 		}
 
-		void OnGUI(){
-			GUILayout.Label ((mFrame / (Time.realtimeSinceStartup - mStartTime)).ToString());
-		}
-
 		#region 1.Send
 		//当有玩家加入或者退出或者准备的場合
+		//プレイヤーを入る、去るとか、準備できた時とか、メセージを送る
 		void SendPlayerStatus(){
 			List<PlayerStatus> pss = new List<PlayerStatus> ();
 			foreach(PlayerStatus ps in mConnections.Values){
@@ -120,6 +101,7 @@ namespace MultipleBattle
 		}
 
 		//告诉客户端创建人物
+		//クライアントにキャラクターを作成する
 		void SendBattleBegin(){
 			CreatePlayer cp = new CreatePlayer ();
 			List<int> playerIds = new List<int> ();
@@ -132,28 +114,28 @@ namespace MultipleBattle
 			NetworkServer.SendToAll (MessageConstant.CLIENT_READY,cp);
 		}
 
-		//发送Frame消息
+		//メセージをクライアントに送る
 		void SendFrame(){
+			//这样做能保证帧率恒定不变
 			while(mNextFrameTime <= Time.fixedUnscaledTime){
 				mNextFrameTime += mFrameInterval;
 				SendFrameMessage ();
-				mFrame++;
 			}
 		}
 
-		//广播消息
+		//メセージをクライアントに送る
 		void SendFrameMessage(){
-			SetFrameMessage ();
+			ConstructFrameMessageAndIncreaseFrameIndex ();
 			NetworkServer.SendUnreliableToAll (MessageConstant.SERVER_TO_CLIENT_MSG, currentMessage);
-			SaveMessage (currentMessage);
 			currentMessage = new ServerMessage ();
 		}
 
-		//组装数据
-		void SetFrameMessage(){
+		//メセージを構造して、フレーム番号が増える
+		void ConstructFrameMessageAndIncreaseFrameIndex(){
 			currentMessage.frame = mFrame;
 			currentMessage.playerHandles = playerHandleList.ToArray();
 			playerHandleList = new List<PlayerHandle> ();
+			mFrame++;
 		}
 		#endregion
 
@@ -162,7 +144,7 @@ namespace MultipleBattle
 		{
 			Debug.Log ("OnClientConnect");
 			NetworkConnection conn = nm.conn;
-			if (isBattleBegin || mConnections.Count >= player_count) {
+			if (isBattleBegin || mConnections.Count >= NetConstant.player_count) {
 				conn.Disconnect ();
 			}else {
 				PlayerStatus ps = new PlayerStatus ();
@@ -187,6 +169,7 @@ namespace MultipleBattle
 		}
 
 		//收到用户准备
+		//ユーザーを準備できたメセージを
 		void OnRecieveClientReady(NetworkMessage msg){
 			Debuger.Log ("OnRecieveClientReady");
 			if(mConnections.ContainsKey(msg.conn.connectionId)){
@@ -198,7 +181,7 @@ namespace MultipleBattle
 					count++;
 				} 
 			}
-			if (count >= player_count) {
+			if (count >= NetConstant.player_count) {
 				isBattleBegin = true;
 				SendBattleBegin ();
 				mStartTime = Time.realtimeSinceStartup;
@@ -208,23 +191,22 @@ namespace MultipleBattle
 		}
 
 		//收到用户请求丢失的帧
+		//
 		void OnRecievePlayerFrameRequest(NetworkMessage msg){
 		
 		}
 
-		//收到用户操作
+		//收到操作
+		//プレーヤーの操作を受ける
 		void OnRecievePlayerHandle(NetworkMessage msg){
 			PlayerHandle playerHandle = msg.ReadMessage<PlayerHandle> ();
 			playerHandle.playerId = msg.conn.connectionId;
-			playerHandleList.Add (playerHandle);//TODO
+			playerHandleList.Add (playerHandle);//TODO 長さを設定する
 		}
 		#endregion
 
-		//保存操作，用于补帧。TODO:用于回放
-		void SaveMessage(ServerMessage sm){
-			//只保存有操作的数据
-			if(currentMessage.playerHandles.Length > 0 )
-				mCachedServerMessageDic.Add (sm.frame,sm);
+		void OnGUI(){
+			GUILayout.Label ((mFrame / (Time.realtimeSinceStartup - mStartTime)).ToString());
 		}
 
 	}

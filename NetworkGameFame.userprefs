@@ -1,13 +1,16 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/physics/CustomCollider2D.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/debug/TestPointInTriangle.cs">
     <Files>
+      <File FileName="Assets/Scripts/math/MathUtility.cs" Line="104" Column="1" />
+      <File FileName="Assets/Scripts/utility/RandomUtility.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/physics/CustomBoxCollider2D.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/physics/CustomCircleCollider2D.cs" Line="41" Column="22" />
-      <File FileName="Assets/Scripts/physics/CustomColliderManager.cs" Line="33" Column="21" />
+      <File FileName="Assets/Scripts/physics/CustomCircleCollider2D.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/physics/CustomColliderManager.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/client/BattleClient.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/math/MathUtility.cs" Line="7" Column="2" />
-      <File FileName="Assets/Scripts/physics/CustomCollider2D.cs" Line="70" Column="26" />
+      <File FileName="Assets/Scripts/physics/CustomCollider2D.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/physics/CustomCollisionUtility.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/debug/TestPointInTriangle.cs" Line="12" Column="13" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

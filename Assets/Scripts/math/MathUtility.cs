@@ -101,5 +101,25 @@ namespace CustomPhysics2D
 			Vector2 rotatePos = Rotate (relativePos, degrees);
 			return rotatePos;
 		}
+
+		//ポイントが三角形に中にかどうかチェックする（判断点是否在三角形里面）
+		public static bool IsPointInTri(Vector2 pt,  Vector2 v1,  Vector2 v2,  Vector2 v3)
+		{
+			float TotalArea = CalcTriArea(v1, v2, v3);
+			float Area1 = CalcTriArea(pt, v2, v3);
+			float Area2 = CalcTriArea(pt, v1, v3);
+			float Area3 = CalcTriArea(pt, v1, v2);
+			if((Area1 + Area2 + Area3) > TotalArea)
+				return false;
+			else
+				return true;
+		}
+
+		public static float CalcTriArea(Vector2 v1, Vector2 v2, Vector2 v3)
+		{
+			float det = 0.0f;
+			det = ((v1.x - v3.x) * (v2.y - v3.y)) - ((v2.x - v3.x) * (v1.y - v3.y));
+			return (det / 2.0f);
+		}
 	}
 }
