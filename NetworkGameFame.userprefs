@@ -1,19 +1,10 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/network/server/BattleServer.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/math/MathUtility.cs">
     <Files>
-      <File FileName="Assets/Scripts/math/MathUtility.cs" Line="99" Column="1" />
       <File FileName="Assets/Scripts/utility/RandomUtility.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/physics/CustomBoxCollider2D.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/physics/CustomCircleCollider2D.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/physics/CustomColliderManager.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/physics/CustomCollider2D.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/physics/CustomCollisionUtility.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/network/client/BattleClient.cs" Line="58" Column="26" />
-      <File FileName="Assets/Scripts/network/constant/NetConstant.cs" Line="9" Column="2" />
-      <File FileName="Assets/Scripts/network/server/BattleServer.cs" Line="11" Column="25" />
-      <File FileName="Assets/Scripts/main/MainManager.cs" Line="33" Column="34" />
-      <File FileName="Assets/Scripts/messages/ServerMessage.cs" Line="10" Column="2" />
+      <File FileName="Assets/Scripts/messages/ServerMessage.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/math/MathUtility.cs" Line="61" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

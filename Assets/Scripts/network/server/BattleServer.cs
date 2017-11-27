@@ -11,14 +11,9 @@ namespace MultipleBattle
 	//TODO 如果客户端后发的信息先到怎么处理？
 	//（1，简单的做法把客户端先发后到的信息忽略。）
 	//（2，复杂的做法，记录收到的客户端发送的帧，这就需要客户端也定时向服务器端发送帧信息，这样服务器端的压力会增加。）
+	//TODO 中途加入，验证用户，然后把存放的帧重新发给客户端。（需要重新验证用户和储存帧）
 	public class BattleServer : NetworkManager
 	{
-		#region debug用Text.
-		public Text txt_ip;
-		public Text txt_port;
-		public Text txt_maxPlayer;
-		public Text txt_debug;
-		#endregion
 
 		public bool isBattleBegin;
 		//送信したフレーム号。
@@ -34,13 +29,8 @@ namespace MultipleBattle
 
 		void Awake ()
 		{
-			txt_maxPlayer.text = NetConstant.player_count.ToString ();
-			this.networkPort = NetConstant.listene_port;
-			if(txt_port!=null)
-				txt_port.text = " Port:" + this.networkPort.ToString ();
-			if(txt_ip!=null)
-				txt_ip.text =" IP:" + Network.player.ipAddress;
 			Reset ();
+			this.networkPort = NetConstant.listene_port;
 			this.StartServer ();
 			connectionConfig.SendDelay = 1;
 			NetworkServer.maxDelay = 0;
@@ -49,6 +39,8 @@ namespace MultipleBattle
 			NetworkServer.RegisterHandler (MessageConstant.CLIENT_REQUEST_FRAMES, OnRecievePlayerFrameRequest);
 			NetworkServer.RegisterHandler (MsgType.Connect, OnClientConnect);
 			NetworkServer.RegisterHandler (MsgType.Disconnect, OnClientDisconnect);
+
+			//Environmentでシステムのパラメーターをセートする
 			string[] commandLineArgs = Environment.GetCommandLineArgs();
 			for(int i=0;i<commandLineArgs.Length;i++){
 				if(commandLineArgs[i].ToLower().IndexOf("playercount")!=-1){
@@ -57,8 +49,7 @@ namespace MultipleBattle
 						int playerCount = 0;
 						if(int.TryParse(countStrs[1],out playerCount)){
 							if (playerCount > 0) {
-								NetConstant.player_count = playerCount;
-								txt_maxPlayer.text = NetConstant.player_count.ToString ();
+								NetConstant.max_player_count = playerCount;
 							}
 						}
 					}
@@ -67,7 +58,8 @@ namespace MultipleBattle
 			mFrameInterval = 1f / NetConstant.FRAME_RATE;
 		}
 
-		void Reset(){
+		//サーバーをリセットーする
+		public void Reset(){
 			isBattleBegin = false;
 			currentMessage = new ServerMessage ();
 			playerHandleList = new List<PlayerHandle> ();
@@ -75,6 +67,7 @@ namespace MultipleBattle
 			mStartTime = 0;
 			mFrame = 0;
 			mNextFrameTime = 0;
+			NetworkServer.Reset ();
 		}
 
 		void Update ()
@@ -147,7 +140,7 @@ namespace MultipleBattle
 		{
 			Debug.Log ("OnClientConnect");
 			NetworkConnection conn = nm.conn;
-			if (isBattleBegin || mConnections.Count >= NetConstant.player_count) {
+			if (isBattleBegin || mConnections.Count >= NetConstant.max_player_count) {
 				conn.Disconnect ();
 			}else {
 				PlayerStatus ps = new PlayerStatus ();
@@ -184,7 +177,7 @@ namespace MultipleBattle
 					count++;
 				} 
 			}
-			if (count >= NetConstant.player_count) {
+			if (count >= NetConstant.max_player_count) {
 				isBattleBegin = true;
 				SendBattleBegin ();
 				mStartTime = Time.realtimeSinceStartup;

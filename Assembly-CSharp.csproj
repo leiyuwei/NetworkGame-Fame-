@@ -68,6 +68,7 @@
      <Compile Include="Assets\Scripts\network\client\BattleClient.cs" />
      <Compile Include="Assets\Scripts\network\constant\NetConstant.cs" />
      <Compile Include="Assets\Scripts\network\server\BattleServer.cs" />
+     <Compile Include="Assets\Scripts\network\server\BattleServerUI.cs" />
      <Compile Include="Assets\Scripts\physics\CustomBoxCollider2D.cs" />
      <Compile Include="Assets\Scripts\physics\CustomCircleCollider2D.cs" />
      <Compile Include="Assets\Scripts\physics\CustomCollider2D.cs" />
