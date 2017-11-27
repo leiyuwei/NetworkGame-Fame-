@@ -52,7 +52,7 @@ namespace MultipleBattle
 				int num = NetConstant.MaxNum;
 				num++;
 				num = Mathf.Clamp (num, 1, 2);
-				NetConstant.player_count = num;
+				NetConstant.max_player_count = num;
 				txt_max_num.text = num.ToString ();
 				txt_max_desc.text = "Multiple";
 			});
@@ -60,7 +60,7 @@ namespace MultipleBattle
 				int num = NetConstant.MaxNum;
 				num--;
 				num = Mathf.Clamp (num, 1, 2);
-				NetConstant.player_count = num;
+				NetConstant.max_player_count = num;
 				txt_max_num.text = num.ToString ();
 				txt_max_desc.text = "Single";
 			});
