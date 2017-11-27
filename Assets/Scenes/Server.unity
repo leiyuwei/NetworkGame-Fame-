@@ -243,7 +243,7 @@ MonoBehaviour:
   txt_debug: {fileID: 1098521346}
   port: 8080
   isBattleBegin: 0
-  MAX_Player: 1
+  MAX_Player: 2
   currentMessage:
     frame: 1
     desc: 
