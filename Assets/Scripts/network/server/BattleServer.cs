@@ -8,6 +8,9 @@ using System;
 namespace MultipleBattle
 {
 	//TODO 保存されるメセージが必要だそうです
+	//TODO 如果客户端后发的信息先到怎么处理？
+	//（1，简单的做法把客户端先发后到的信息忽略。）
+	//（2，复杂的做法，记录收到的客户端发送的帧，这就需要客户端也定时向服务器端发送帧信息，这样服务器端的压力会增加。）
 	public class BattleServer : NetworkManager
 	{
 		#region debug用Text.
@@ -191,7 +194,7 @@ namespace MultipleBattle
 		}
 
 		//收到用户请求丢失的帧
-		//
+		//TODO ユーザーからフレーム
 		void OnRecievePlayerFrameRequest(NetworkMessage msg){
 		
 		}
@@ -201,7 +204,7 @@ namespace MultipleBattle
 		void OnRecievePlayerHandle(NetworkMessage msg){
 			PlayerHandle playerHandle = msg.ReadMessage<PlayerHandle> ();
 			playerHandle.playerId = msg.conn.connectionId;
-			playerHandleList.Add (playerHandle);//TODO 長さを設定する
+			playerHandleList.Add (playerHandle);//TODO 長さを設定する、
 		}
 		#endregion
 
