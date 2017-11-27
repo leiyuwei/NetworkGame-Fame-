@@ -60,7 +60,6 @@
      <Compile Include="Assets\Scripts\editor_tools\GroundPrefabGrid.cs" />
      <Compile Include="Assets\Scripts\editor_tools\MapEditTool.cs" />
      <Compile Include="Assets\Scripts\main\MainManager.cs" />
-     <Compile Include="Assets\Scripts\math\MathTestController.cs" />
      <Compile Include="Assets\Scripts\math\MathUtility.cs" />
      <Compile Include="Assets\Scripts\messages\ActionConstant.cs" />
      <Compile Include="Assets\Scripts\messages\ClientMessage.cs" />

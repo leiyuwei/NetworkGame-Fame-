@@ -4,7 +4,17 @@
     <Files>
       <File FileName="Assets/Scripts/utility/RandomUtility.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/messages/ServerMessage.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/math/MathUtility.cs" Line="61" Column="1" />
+      <File FileName="Assets/Scripts/math/MathUtility.cs" Line="10" Column="50" />
+      <File FileName="Assets/Scripts/physics/CustomCollisionUtility.cs" Line="115" Column="64" />
+      <File FileName="Assets/Scripts/physics/test/TestPointOnLineSegment.cs" Line="14" Column="57" />
+      <File FileName="Assets/Scripts/network/client/BattleClient.cs" Line="64" Column="1" />
+      <File FileName="Assets/Scripts/messages/MessageConstant.cs" Line="10" Column="42" />
+      <File FileName="Assets/Scripts/client/BattleClientController.cs" Line="49" Column="1" />
+      <File FileName="Assets/Scripts/physics/test/TestCustomCircleAndBox.cs" Line="21" Column="4" />
+      <File FileName="Assets/Scripts/network/server/BattleServerUI.cs" Line="18" Column="3" />
+      <File FileName="Assets/Scripts/network/server/BattleServer.cs" Line="8" Column="1" />
+      <File FileName="Assets/Scripts/network/constant/NetConstant.cs" Line="33" Column="2" />
+      <File FileName="Assets/Scripts/physics/test/TestCustomLineLineIntersect.cs" Line="20" Column="57" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
