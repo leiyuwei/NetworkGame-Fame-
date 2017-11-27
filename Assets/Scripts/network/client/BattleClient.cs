@@ -48,9 +48,6 @@ namespace MultipleBattle
 			mFrame = 0;
 			mMaxRunableFrame = 0;
 			mMaxFrame = 0;
-			mRunSpeed = 0;
-			mLastLogicFrameTime = 0;
-			mNextMaxFrameRequestTime = 0;
 			mRecievedFrameCount = 0;
 			mStartTime = 0;
 		}
@@ -64,11 +61,6 @@ namespace MultipleBattle
 		int mMaxRunableFrame = 0;
 		//接收到到最大帧番号
 		int mMaxFrame = 0;
-		//执行速度
-		int mRunSpeed = 1;
-		//上一次逻辑执行时间
-		float mLastLogicFrameTime;
-		float mNextMaxFrameRequestTime;
 		public const float mMaxFrameWaitingTime = 0.5f;
 
 		//服务端30FPS的发送频率。客户端60FPS的执行频率。

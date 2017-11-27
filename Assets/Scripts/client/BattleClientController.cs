@@ -43,11 +43,9 @@ namespace MultipleBattle
 			BattleClient.Instance.Reset ();
 		}
 
-		int mFrame;
 
 		public void UpdateFrame (ServerMessage sm)
 		{
-			mFrame = sm.frame;
 			for(int i=0;i<sm.playerHandles.Length;i++){
 				PlayerHandle ph = sm.playerHandles[i];
 				PlayerInfo pi = players [ph.playerId];
