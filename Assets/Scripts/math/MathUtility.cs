@@ -58,7 +58,6 @@ namespace CustomPhysics2D
 			**/
 			float a0 = delta0.y / delta0.x;
 			float b0 = start0.y - start0.x * a0;
-			Vector2 delta1 = start1 - end1;
 			/**
 			 * 推理には
 			 * y = a1x + b1;
