@@ -30,7 +30,7 @@ namespace CustomPhysics2D
 			normal = Vector2.zero;
 			hit = Vector2.zero;
 			Vector2 verticalPos = MathUtility.GetVerticalForPointAndLine (circle.GetCenter (), min, new Vector2 (min.x, max.y));
-			if (MathUtility.IsPointOnLineSegment(verticalPos,min, new Vector2 (min.x, max.y)) && (verticalPos - circle.GetCenter()).sqrMagnitude <= circle.circle.radius * circle.circle.radius) {
+			if (MathUtility.IsPointOnLineSegmentByMagnitude(verticalPos,min, new Vector2 (min.x, max.y)) && (verticalPos - circle.GetCenter()).sqrMagnitude <= circle.circle.radius * circle.circle.radius) {
 				normal = MathUtility.Rotate(min - new Vector2 (min.x, max.y),90).normalized;
 				hit = verticalPos;
 				return true;
@@ -38,7 +38,7 @@ namespace CustomPhysics2D
 //			CreateDebuger (circle.GetCenter (),min, new Vector2 (min.x, max.y),verticalPos);
 
 			verticalPos = MathUtility.GetVerticalForPointAndLine (circle.GetCenter (), new Vector2 (min.x, max.y), max);
-			if (MathUtility.IsPointOnLineSegment(verticalPos, new Vector2 (min.x, max.y), max) &&  (verticalPos - circle.GetCenter()).sqrMagnitude <= circle.circle.radius * circle.circle.radius) {
+			if (MathUtility.IsPointOnLineSegmentByMagnitude(verticalPos, new Vector2 (min.x, max.y), max) &&  (verticalPos - circle.GetCenter()).sqrMagnitude <= circle.circle.radius * circle.circle.radius) {
 				normal = MathUtility.Rotate(new Vector2 (min.x, max.y) -  max,90).normalized;
 				hit = verticalPos;
 				return true;
@@ -46,7 +46,7 @@ namespace CustomPhysics2D
 //			CreateDebuger (circle.GetCenter (), new Vector2 (min.x, max.y), max,verticalPos);
 
 			verticalPos = MathUtility.GetVerticalForPointAndLine (circle.GetCenter (), max, new Vector2 (max.x, min.y));
-			if (MathUtility.IsPointOnLineSegment(verticalPos, max, new Vector2 (max.x, min.y)) && (verticalPos - circle.GetCenter()).sqrMagnitude <= circle.circle.radius * circle.circle.radius) {
+			if (MathUtility.IsPointOnLineSegmentByMagnitude(verticalPos, max, new Vector2 (max.x, min.y)) && (verticalPos - circle.GetCenter()).sqrMagnitude <= circle.circle.radius * circle.circle.radius) {
 				normal = MathUtility.Rotate(max -new Vector2 (max.x, min.y),90).normalized;
 				hit = verticalPos;
 				return true;
@@ -54,7 +54,7 @@ namespace CustomPhysics2D
 //			CreateDebuger (circle.GetCenter (),max, new Vector2 (max.x, min.y),verticalPos);
 
 			verticalPos = MathUtility.GetVerticalForPointAndLine (circle.GetCenter (), new Vector2 (max.x, min.y), min);
-			if (MathUtility.IsPointOnLineSegment(verticalPos,new Vector2 (max.x, min.y), min) && (verticalPos - circle.GetCenter()).sqrMagnitude <= circle.circle.radius * circle.circle.radius) {
+			if (MathUtility.IsPointOnLineSegmentByMagnitude(verticalPos,new Vector2 (max.x, min.y), min) && (verticalPos - circle.GetCenter()).sqrMagnitude <= circle.circle.radius * circle.circle.radius) {
 				normal = MathUtility.Rotate(new Vector2 (max.x, min.y) - min,90).normalized;
 				hit = verticalPos;
 				return true;

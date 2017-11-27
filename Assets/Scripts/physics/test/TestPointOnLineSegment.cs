@@ -11,7 +11,7 @@ public class TestPointOnLineSegment : MonoBehaviour {
 
 	void Update () {
 		if(Input.GetKeyDown(KeyCode.F)){
-			Debug.Log(MathUtility.IsPointOnLineSegment (pos0,pos1,pos2));
+			Debug.Log(MathUtility.IsPointOnLineSegmentByMagnitude (pos0,pos1,pos2));
 		}
 	}
 }

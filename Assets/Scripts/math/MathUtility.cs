@@ -19,32 +19,30 @@ namespace CustomPhysics2D
 			if (start.y - end.y == 0) {
 				return new Vector2 (point.x, start.y);
 			}
-
-			//y = ax + b;
-			//start.y = start.x * a + b;
-			//end.y = end.x * a + b;
 			float a = (start.y - end.y) / (start.x - end.x);
 			float b = start.y - start.x * a;
-			//y = a * x + b；
 
 			Vector2 rotated = Rotate (new Vector2 (start.x - end.x, start.y - end.y), 90f);
-			float a0 = rotated.y / rotated.x;//    (start.x - end.x) / (start.y - end.y);
+			float a0 = rotated.y / rotated.x;
 			float b0 = point.y - point.x * a0;
-			//y = a0 * x + b0
 
-			//0 = (a0 - a) * x + b0 -b;
 			float x0 = (b - b0) / (a0 - a);
 			float y0 = a * x0 + b;
 			return new Vector2 (x0, y0);
 		}
 
-		//ポイントがラインであるのかどうか、計算する。
-		public static bool IsPointOnLineSegmentByMagnitude (Vector2 point, Vector2 start, Vector2 end)
+		//ポイントがラインであるのかどうか、計算する。精度がある
+		public static bool IsPointOnLineSegmentByMagnitude (Vector2 point, Vector2 start, Vector2 end,uint accuracy = 0)
 		{
 			float distance = (end - start).magnitude;
 			float dis0 = (point - end).magnitude;
 			float dis1 = (point - start).magnitude;
-			return Mathf.RoundToInt (distance * 1000) == Mathf.RoundToInt ((dis0 + dis1) * 1000);
+			if (accuracy == 0) {
+				return distance == dis0 + dis1;
+			} else {
+				accuracy = (uint)Mathf.Pow (10,accuracy);
+				return Mathf.RoundToInt (distance * accuracy) == Mathf.RoundToInt ((dis0 + dis1) * accuracy);
+			}
 		}
 
 		//ポイントが線分であるのかどうか、計算する。
@@ -71,36 +69,18 @@ namespace CustomPhysics2D
 				return false;
 		}
 
-
 		//二つ線の交点（Algebraic）
 		public static bool IsLineSegmentAndLineSegment (Vector2 start0, Vector2 end0, Vector2 start1, Vector2 end1, out Vector2 hit)
 		{
 			Vector2 delta0 = start0 - end0;
-			/**
-			 * 推理には
-			 * y = a0x + b0;
-			**/
 			float a0 = delta0.y / delta0.x;
 			float b0 = start0.y - start0.x * a0;
-			/**
-			 * 推理には
-			 * y = a1x + b1;
-			**/
 			float a1 = (start1.y - end1.y) / (start1.x - end1.x);
 			float b1 = start1.y - start1.x * a1;
-			//平行線
 			if (a0 == a1) {
 				hit = Vector2.zero;
 				return false;
 			}
-			/**
-			 * 推理には
-			 * y = a0 * x + b0;
-			 * y = a1 * x + b1;
-			 * 0 = (a0-a1) * x + (b0 - b1);
-			 * x = (b1 - b0) / (a0 - a1);
-			 * y = x * a0 + b0;
-			**/	
 			float x0 = (b1 - b0) / (a0 - a1);
 			float y0 = x0 * a0 + b0;
 			hit = new Vector2 (x0, y0);
