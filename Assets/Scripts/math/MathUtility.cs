@@ -29,12 +29,13 @@ public static class MathUtility
 		return new Vector2 (x0, y0);
 	}
 
-	//ポイントがラインであるのかどうか、計算する。精度がある
-	public static bool IsPointOnLineSegmentByMagnitude (Vector2 point, Vector2 start, Vector2 end, uint accuracy = 0)
+	//ポイントがラインであるのかどうか、計算する。精度がある(3D)
+	public static bool IsPointOnLineSegmentByMagnitude (Vector3 point, Vector3 start, Vector3 end, uint accuracy = 0)
 	{
 		float distance = (end - start).magnitude;
 		float dis0 = (point - end).magnitude;
 		float dis1 = (point - start).magnitude;
+		Debug.Log (string.Format("{0}/{1}/{2}",distance,dis0,dis1));
 		if (accuracy == 0) {
 			return distance == dis0 + dis1;
 		} else {
@@ -43,31 +44,55 @@ public static class MathUtility
 		}
 	}
 
-	//ポイントが線分であるのかどうか、計算する。
+	//ポイントがラインであるのかどうか、計算する。精度がある(2D)
+	public static bool IsPointOnLineSegmentByMagnitude (Vector2 point, Vector2 start, Vector2 end, uint accuracy = 0)
+	{
+		float distance = (end - start).magnitude;
+		float dis0 = (point - end).magnitude;
+		float dis1 = (point - start).magnitude;
+		Debug.Log (string.Format("{0}/{1}/{2}",distance,dis0,dis1));
+		if (accuracy == 0) {
+			return distance == dis0 + dis1;
+		} else {
+			accuracy = (uint)Mathf.Pow (10, accuracy);
+			return Mathf.RoundToInt (distance * accuracy) == Mathf.RoundToInt ((dis0 + dis1) * accuracy);
+		}
+	}
+
+	//ポイントが線分であるのかどうか、計算する。(2D)
 	public static bool IsPointOnLineSegmentByAlgebra (Vector2 point, Vector2 start, Vector2 end)
 	{
 		if (IsPointOnLineByAlgebra (point, start, end)) {
 			float minX = Mathf.Min (start.x, end.x);
 			float maxX = Mathf.Max (start.x, end.x);
-			if (point.x >= minX && point.x <= maxX) {
+			float minY = Mathf.Min (start.y, end.y);
+			float maxY = Mathf.Max (start.y, end.y);
+			if (point.x >= minX && point.x <= maxX && point.x >= minY && point.x <= maxY) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	//ポイントがラインであるのかどうか、計算する。
+	//ポイントがラインであるのかどうか、計算する。(2D)
 	public static bool IsPointOnLineByAlgebra (Vector2 point, Vector2 start, Vector2 end)
 	{
-		float a = (end.y - start.y) / (end.x - start.x);
-		float b = start.y - (end.y - start.y) / (end.x - start.x) / start.x;
+		float a, b;
+		if (end.x - start.x == 0) {
+			a = 0;
+			b = start.y;
+		} else {
+			a = (end.y - start.y) / (end.x - start.x);
+			b = start.y - (end.y - start.y) / (end.x - start.x) / start.x;
+		}
+		Debug.Log (string.Format ("{0}/{1}", point.y, point.x * a + b));
 		if (point.y == point.x * a + b) {
 			return true;
 		} else
 			return false;
 	}
 
-	//二つ線の交点（Algebraic）
+	//二つ線の交点（Algebraic）(2D)
 	public static bool IsLineSegmentAndLineSegment (Vector2 start0, Vector2 end0, Vector2 start1, Vector2 end1, out Vector2 hit)
 	{
 		Vector2 delta0 = start0 - end0;
