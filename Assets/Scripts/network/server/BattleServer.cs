@@ -19,9 +19,7 @@ namespace MultipleBattle
 		public bool isBattleBegin;
 		//送信したフレーム号。
 		int mFrame = 0;
-		float mStartTime;
 		float mNextFrameTime;
-
 		Dictionary<int,HandleMessage> mHandleMessages;
 		Dictionary<int,PlayerStatus> mConnections;
 		float mFrameInterval;
@@ -62,7 +60,6 @@ namespace MultipleBattle
 			isBattleBegin = false;
 			mConnections = new Dictionary<int, PlayerStatus> ();
 			mHandleMessages = new Dictionary<int, HandleMessage> ();
-			mStartTime = 0;
 			mFrame = 0;
 			mNextFrameTime = 0;
 			NetworkServer.Reset ();
@@ -184,7 +181,6 @@ namespace MultipleBattle
 			if (count >= NetConstant.max_player_count) {
 				isBattleBegin = true;
 				SendBattleBegin ();
-				mStartTime = Time.realtimeSinceStartup;
 				mNextFrameTime = Time.realtimeSinceStartup;
 			} 
 			SendPlayerStatus ();
@@ -208,12 +204,6 @@ namespace MultipleBattle
 			}
 		}
 		#endregion
-
-//		#if UNITY_EDITOR
-//		void OnGUI(){
-//			GUILayout.Label ((mFrame / (Time.realtimeSinceStartup - mStartTime)).ToString());
-//		}
-//		#endif
 
 	}
 }
