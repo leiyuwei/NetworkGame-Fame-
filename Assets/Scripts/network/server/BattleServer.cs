@@ -7,11 +7,12 @@ using System;
 
 namespace MultipleBattle
 {
-	//TODO 保存されるメセージが必要だそうです
+	//TODO 保存されるメセージが必要だそうです。
 	//TODO 如果客户端后发的信息先到怎么处理？
 	//（1，简单的做法把客户端先发后到的信息忽略。）
 	//（2，复杂的做法，记录收到的客户端发送的帧，这就需要客户端也定时向服务器端发送帧信息，这样服务器端的压力会增加。）
-	//TODO 中途加入，验证用户，然后把存放的帧重新发给客户端。（需要重新验证用户和储存帧）
+	//TODO 中途加入，验证用户，然后把存放的帧重新发给客户端。（需要重新验证用户和储存帧。）
+	//TODO 用这种方式可以把AI独立出来，也就是说随时可以写有限的ai逻辑彼此对战（看谁的AI更好），但是游戏本身的逻辑不会改变。
 	public class BattleServer : NetworkManager
 	{
 
@@ -20,10 +21,8 @@ namespace MultipleBattle
 		int mFrame = 0;
 		float mStartTime;
 		float mNextFrameTime;
-		[HideInInspector]
-		public ServerMessage currentMessage;
-		[HideInInspector]
-		public List<PlayerHandle> playerHandleList;
+
+		Dictionary<int,HandleMessage> mHandleMessages;
 		Dictionary<int,PlayerStatus> mConnections;
 		float mFrameInterval;
 
@@ -61,9 +60,8 @@ namespace MultipleBattle
 		//サーバーをリセットーする
 		public void Reset(){
 			isBattleBegin = false;
-			currentMessage = new ServerMessage ();
-			playerHandleList = new List<PlayerHandle> ();
 			mConnections = new Dictionary<int, PlayerStatus> ();
+			mHandleMessages = new Dictionary<int, HandleMessage> ();
 			mStartTime = 0;
 			mFrame = 0;
 			mNextFrameTime = 0;
@@ -121,16 +119,22 @@ namespace MultipleBattle
 
 		//メセージをクライアントに送る
 		void SendFrameMessage(){
-			ConstructFrameMessageAndIncreaseFrameIndex ();
+			ServerMessage currentMessage = new ServerMessage ();
+			ConstructFrameMessageAndIncreaseFrameIndex (currentMessage);
 			NetworkServer.SendUnreliableToAll (MessageConstant.SERVER_TO_CLIENT_MSG, currentMessage);
-			currentMessage = new ServerMessage ();
 		}
 
 		//メセージを構造して、フレーム番号が増える
-		void ConstructFrameMessageAndIncreaseFrameIndex(){
+		void ConstructFrameMessageAndIncreaseFrameIndex(ServerMessage currentMessage){
 			currentMessage.frame = mFrame;
-			currentMessage.playerHandles = playerHandleList.ToArray();
-			playerHandleList = new List<PlayerHandle> ();
+			List<HandleMessage> handleMessages = new List<HandleMessage> ();
+			int i = 0;
+			foreach(int playerId in mHandleMessages.Keys){
+				handleMessages.Add (mHandleMessages [playerId]);
+				mHandleMessages [playerId] = null;
+				i++;
+			}
+			currentMessage.handleMessages = handleMessages.ToArray();
 			mFrame++;
 		}
 		#endregion
@@ -187,7 +191,7 @@ namespace MultipleBattle
 		}
 
 		//收到用户请求丢失的帧
-		//TODO ユーザーからフレーム
+		// ユーザーからフレーム
 		void OnRecievePlayerFrameRequest(NetworkMessage msg){
 		
 		}
@@ -195,15 +199,21 @@ namespace MultipleBattle
 		//收到操作
 		//プレーヤーの操作を受ける
 		void OnRecievePlayerHandle(NetworkMessage msg){
-			PlayerHandle playerHandle = msg.ReadMessage<PlayerHandle> ();
+			HandleMessage playerHandle = msg.ReadMessage<HandleMessage> ();
 			playerHandle.playerId = msg.conn.connectionId;
-			playerHandleList.Add (playerHandle);//TODO 長さを設定する、
+			if (!mHandleMessages.ContainsKey (playerHandle.playerId)) {
+				mHandleMessages.Add (playerHandle.playerId, playerHandle);
+			} else {
+				mHandleMessages[playerHandle.playerId] = playerHandle;
+			}
 		}
 		#endregion
 
-		void OnGUI(){
-			GUILayout.Label ((mFrame / (Time.realtimeSinceStartup - mStartTime)).ToString());
-		}
+//		#if UNITY_EDITOR
+//		void OnGUI(){
+//			GUILayout.Label ((mFrame / (Time.realtimeSinceStartup - mStartTime)).ToString());
+//		}
+//		#endif
 
 	}
 }

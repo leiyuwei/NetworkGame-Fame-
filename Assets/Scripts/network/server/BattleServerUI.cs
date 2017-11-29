@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 
 namespace MultipleBattle
 {
-	//debug用Text.
+	//Debug用Text.
 	public class BattleServerUI : SingleMonoBehaviour<BattleServerUI>
 	{
 		public BattleServer battleServer;

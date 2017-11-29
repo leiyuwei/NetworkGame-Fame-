@@ -8,6 +8,12 @@ using System;
 
 namespace MultipleBattle
 {
+
+	//TODO:保存所有的帧用于回放
+	//TODO:重新同步数据。（1.请求同步，2.服务器获取主机数据，3.同步，4.补帧）
+	//TODO:同步对服务器和主机的压力可能会比较大，必要的場合同步时可以暂停游戏，等待数据发送过后再继续进行。
+	//TODO:考虑到战斗服务器上可能同时运行上百场战斗，为了不影响其他战斗的进行，可以单独一台服务器作为同步服务器。
+	//TODO:丢帧过后的重新请求的策略。
 	public class BattleClient : SingleMonoBehaviour<BattleClient>
 	{
 		public string defaultIP;
@@ -21,10 +27,6 @@ namespace MultipleBattle
 		Dictionary<int,ServerMessage> mRunableMessages;
 		List<ServerMessage> mCachedMessageList;
 
-
-		//TODO:重新同步数据。（1.请求同步，2.服务器获取主机数据，3.同步，4.补帧）
-		//同步对服务器和主机的压力可能会比较大，必要的場合同步时可以暂停游戏，等待数据发送过后再继续进行。
-		//考虑到战斗服务器上可能同时运行上百场战斗，为了不影响其他战斗的进行，可以单独一台服务器作为同步服务器。
 		void Start ()
 		{
 			mCachedMessages = new Dictionary<int, ServerMessage> ();
@@ -98,8 +100,6 @@ namespace MultipleBattle
 		{
 			if (mRunableMessages.ContainsKey (mFrame)) {
 				mCurrentServerMessage = mRunableMessages [mFrame];
-				if (mCurrentServerMessage.playerHandles.Length > 0)
-					RecordMessage (mCurrentServerMessage);
 				mRunableMessages.Remove (mFrame);
 				BattleClientController.Instance.UpdateFrame (mCurrentServerMessage);
 				mFrame++;
@@ -180,36 +180,6 @@ namespace MultipleBattle
 			isBattleBegin = true;
 		}
 
-		//得到丢失的帧
-		LostFrameIdsMessage GetLostFrameIds ()
-		{
-			LostFrameIdsMessage messages = new LostFrameIdsMessage ();
-//			List<LostFrameIdAToBMessage> abMessages = new List<LostFrameIdAToBMessage> ();
-//			int fromFrame = 0;
-//			int toFrame = 0;
-//			for(int i = mFrame;i< mMaxFrame;i++){
-//				if (!mCachedMessages.ContainsKey (i)) {
-//					LostFrameIdAToBMessage abMessage = new LostFrameIdAToBMessage ();
-//					abMessage.fromFrame = i;
-//					abMessage.toFrame = i;
-//					while(true){
-//						i++;
-//						if(i > mMaxFrameGetInstance ()）
-//							break;
-//						}
-//						if (!mCachedMessages.ContainsKey (i)) {
-//							abMessage.toFrame = i;
-//						} else {
-//							break;
-//						}
-//					}
-//					abMessages.Add (abMessage);
-//				}
-//			}
-//			messages.frameAToB = abMessages.ToArray ();
-			return messages;
-		}
-
 		void OnFrameMessage (NetworkMessage mb)
 		{
 			if (mStartTime == 0)
@@ -253,12 +223,6 @@ namespace MultipleBattle
 					}
 				}
 			}
-		}
-
-		//记录操作便于回放
-		void RecordMessage (ServerMessage tm)
-		{
-//			BattleClientReplayManager.Instance.record.records.Add (tm);
 		}
 
 		#endregion

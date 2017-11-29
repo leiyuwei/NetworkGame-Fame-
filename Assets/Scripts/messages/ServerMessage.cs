@@ -16,13 +16,22 @@ namespace MultipleBattle
 		public ServerMessage[] serverMessages;
 	}
 
+	//通信を簡単になるために、制御するメッセージがstringで使って。
+	[Serializable]
+	public class HandleMessage : MessageBase{
+		public int playerId;
+		public string handle;
+	}
+
 	[Serializable]
 	public class ServerMessage : MessageBase
 	{
 		public int frame = 1;
 		public string desc = "";
 		[SerializeField]
-		public PlayerHandle[] playerHandles;
+		public PlayerHandle[] playerHandles;//Old
+		[SerializeField]
+		public HandleMessage[] handleMessages;//New
 	}
 
 	[Serializable]
