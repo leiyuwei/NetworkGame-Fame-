@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
+using System.Text;
 
 namespace MultipleBattle
 {
@@ -13,8 +14,11 @@ namespace MultipleBattle
 		public Text txt_ip;
 		public Text txt_port;
 		public Text txt_maxPlayer;
-		public Text txt_debug;
+		public Text txt_message;
 		public Button btn_reset;
+
+		public bool isDebug;
+		public Text txt_debug;
 
 		protected override void Awake ()
 		{
@@ -36,7 +40,7 @@ namespace MultipleBattle
 
 		int mCurrentConnetCount;
 		void SetPlayer(){
-			txt_maxPlayer.text = string.Format (" Player: {0}/{1}",NetworkServer.connections.Count,NetConstant.max_player_count);
+			txt_maxPlayer.text = string.Format (" Player: {0}/{1}",battleServer.ConnectionCount,NetConstant.max_player_count);
 		}
 
 		void Update(){

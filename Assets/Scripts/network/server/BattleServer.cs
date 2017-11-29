@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using System;
+using System.Text;
 
 namespace MultipleBattle
 {
@@ -24,6 +25,9 @@ namespace MultipleBattle
 		Dictionary<int,PlayerStatus> mConnections;
 		float mFrameInterval;
 
+		public bool isCacheMessage;
+		StringBuilder mStringBuilder;
+
 		void Awake ()
 		{
 			Reset ();
@@ -36,7 +40,8 @@ namespace MultipleBattle
 			NetworkServer.RegisterHandler (MessageConstant.CLIENT_REQUEST_FRAMES, OnRecievePlayerFrameRequest);
 			NetworkServer.RegisterHandler (MsgType.Connect, OnClientConnect);
 			NetworkServer.RegisterHandler (MsgType.Disconnect, OnClientDisconnect);
-
+			mStringBuilder = new StringBuilder ();
+			mCachedLines = new List<CachedLine> ();
 			//Environmentでシステムのパラメーターをセートする
 			string[] commandLineArgs = Environment.GetCommandLineArgs();
 			for(int i=0;i<commandLineArgs.Length;i++){
@@ -62,7 +67,6 @@ namespace MultipleBattle
 			mHandleMessages = new Dictionary<int, HandleMessage> ();
 			mFrame = 0;
 			mNextFrameTime = 0;
-			NetworkServer.Reset ();
 		}
 
 		void Update ()
@@ -74,6 +78,12 @@ namespace MultipleBattle
 			if(this.mConnections.Count == 0){
 				isBattleBegin = false;
 				mFrame = 0;
+			}
+		}
+
+		public int ConnectionCount{
+			get{ 
+				return mConnections.Count;
 			}
 		}
 
@@ -149,6 +159,9 @@ namespace MultipleBattle
 				ps.isReady = false;
 				mConnections.Add (conn.connectionId,ps);
 				SendPlayerStatus ();
+				if(isCacheMessage){
+					
+				}
 			}
 		}
 
@@ -205,5 +218,31 @@ namespace MultipleBattle
 		}
 		#endregion
 
+
+		#region 3.Debug message
+
+		List<CachedLine> mCachedLines;
+//		int mMaxCacheLine = 20;
+
+		void AddDebugMessage(string msg){
+			CachedLine newLine = new CachedLine ();
+			newLine.startIndex = mStringBuilder.Length;
+			newLine.count = msg.Length + 1;
+			mCachedLines.Add (newLine);
+
+//			if(mMaxCacheLine){
+//				CachedLine oldLine = mCachedLines [0];
+//				mCachedLines.RemoveAt (0);
+//			}
+
+			mStringBuilder.AppendLine (msg);
+		}
+
+		struct CachedLine{
+			public int startIndex;
+			public int count;
+		}
+
+		#endregion
 	}
 }

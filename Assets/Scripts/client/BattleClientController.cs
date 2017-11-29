@@ -63,7 +63,7 @@ namespace MultipleBattle
 //				}
 //			}
 			frame++;
-			BattleClientUIManager.Instance.txt_frame.text = frame.ToString ();
+			BattleClientUI.Instance.txt_frame.text = frame.ToString ();
 		}
 
 		public void CreatePlayers (CreatePlayer cp)
@@ -89,7 +89,7 @@ namespace MultipleBattle
 		public void Stop ()
 		{
 			BattleClient.Instance.Disconnect ();
-			BattleClientUIManager.Instance.OnDisconnected ();
+			BattleClientUI.Instance.OnDisconnected ();
 			BattleClientController.Instance.Reset ();
 		}
 
