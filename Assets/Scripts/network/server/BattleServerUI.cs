@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 using System.Text;
+using UnityEngine.EventSystems;
 
 namespace MultipleBattle
 {
@@ -14,11 +15,11 @@ namespace MultipleBattle
 		public Text txt_ip;
 		public Text txt_port;
 		public Text txt_maxPlayer;
-		public Text txt_message;
 		public Button btn_reset;
 
 		public bool isDebug;
 		public Text txt_debug;
+		public Scrollbar scroll_debug;
 
 		protected override void Awake ()
 		{
@@ -36,6 +37,9 @@ namespace MultipleBattle
 				});
 			}
 			SetPlayer ();
+			mStringBuilder = new StringBuilder ();
+			mCachedLines = new List<CachedLine> ();
+			Application.logMessageReceived += HandleLog;
 		}
 
 		int mCurrentConnetCount;
@@ -50,5 +54,41 @@ namespace MultipleBattle
 			}
 		}
 
+		List<CachedLine> mCachedLines;
+		StringBuilder mStringBuilder;
+		int mMaxStringLength = 100000;
+		public string Message{
+			get{ 
+				return mStringBuilder.ToString ();
+			}
+		}
+
+		void AddDebugMessage(string msg){
+			CachedLine newLine = new CachedLine ();
+			newLine.startIndex = mStringBuilder.Length;
+			newLine.count = msg.Length + 1;
+			mCachedLines.Add (newLine);
+			mStringBuilder.AppendLine (msg);
+			if(mStringBuilder.Length > mMaxStringLength){
+				mStringBuilder.Remove (0,mStringBuilder.Length - mMaxStringLength / 2);
+			}
+			if (isDebug) {
+				txt_debug.text = Message;
+				scroll_debug.value = 0;
+			}
+		}
+
+		struct CachedLine{
+			public int startIndex;
+			public int count;
+		}
+
+		void OnDisable () {
+			Application.logMessageReceived -= HandleLog;
+		}
+
+		void HandleLog(string logString, string stackTrace, LogType type){
+			AddDebugMessage (logString);
+		}
 	}
 }

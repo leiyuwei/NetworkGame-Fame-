@@ -21,12 +21,9 @@ namespace MultipleBattle
 		//送信したフレーム号。
 		int mFrame = 0;
 		float mNextFrameTime;
+		float mFrameInterval;
 		Dictionary<int,HandleMessage> mHandleMessages;
 		Dictionary<int,PlayerStatus> mConnections;
-		float mFrameInterval;
-
-		public bool isCacheMessage;
-		StringBuilder mStringBuilder;
 
 		void Awake ()
 		{
@@ -40,8 +37,6 @@ namespace MultipleBattle
 			NetworkServer.RegisterHandler (MessageConstant.CLIENT_REQUEST_FRAMES, OnRecievePlayerFrameRequest);
 			NetworkServer.RegisterHandler (MsgType.Connect, OnClientConnect);
 			NetworkServer.RegisterHandler (MsgType.Disconnect, OnClientDisconnect);
-			mStringBuilder = new StringBuilder ();
-			mCachedLines = new List<CachedLine> ();
 			//Environmentでシステムのパラメーターをセートする
 			string[] commandLineArgs = Environment.GetCommandLineArgs();
 			for(int i=0;i<commandLineArgs.Length;i++){
@@ -83,7 +78,10 @@ namespace MultipleBattle
 
 		public int ConnectionCount{
 			get{ 
-				return mConnections.Count;
+				if (mConnections != null)
+					return mConnections.Count;
+				else
+					return 0;
 			}
 		}
 
@@ -95,7 +93,6 @@ namespace MultipleBattle
 			foreach(PlayerStatus ps in mConnections.Values){
 				pss.Add (ps);
 			}
-			Debug.Log (pss.Count);
 			PlayerStatusArray psa = new PlayerStatusArray ();
 			psa.playerStatus = pss.ToArray ();
 			NetworkServer.SendToAll (MessageConstant.SERVER_CLIENT_STATUS,psa);
@@ -149,7 +146,7 @@ namespace MultipleBattle
 		#region 2.Recieve
 		void OnClientConnect (NetworkMessage nm)
 		{
-			Debug.Log ("OnClientConnect");
+			Debug.logger.Log ("OnClientConnect");
 			NetworkConnection conn = nm.conn;
 			if (isBattleBegin || mConnections.Count >= NetConstant.max_player_count) {
 				conn.Disconnect ();
@@ -159,15 +156,12 @@ namespace MultipleBattle
 				ps.isReady = false;
 				mConnections.Add (conn.connectionId,ps);
 				SendPlayerStatus ();
-				if(isCacheMessage){
-					
-				}
 			}
 		}
 
 		void OnClientDisconnect (NetworkMessage nm)
 		{
-			Debug.Log ("OnClientDisconnect");
+			Debug.logger.Log ("OnClientDisconnect");
 			NetworkConnection conn = nm.conn;
 			mConnections.Remove(conn.connectionId);
 
@@ -181,7 +175,7 @@ namespace MultipleBattle
 		//收到用户准备
 		//ユーザーを準備できたメセージを
 		void OnRecieveClientReady(NetworkMessage msg){
-			Debuger.Log ("OnRecieveClientReady");
+			Debug.logger.Log ("OnRecieveClientReady");
 			if(mConnections.ContainsKey(msg.conn.connectionId)){
 				mConnections [msg.conn.connectionId].isReady = true;
 			}
@@ -210,6 +204,7 @@ namespace MultipleBattle
 		void OnRecievePlayerHandle(NetworkMessage msg){
 			HandleMessage playerHandle = msg.ReadMessage<HandleMessage> ();
 			playerHandle.playerId = msg.conn.connectionId;
+			Debug.logger.Log (JsonUtility.ToJson(playerHandle));
 			if (!mHandleMessages.ContainsKey (playerHandle.playerId)) {
 				mHandleMessages.Add (playerHandle.playerId, playerHandle);
 			} else {
@@ -217,32 +212,6 @@ namespace MultipleBattle
 			}
 		}
 		#endregion
-
-
-		#region 3.Debug message
-
-		List<CachedLine> mCachedLines;
-//		int mMaxCacheLine = 20;
-
-		void AddDebugMessage(string msg){
-			CachedLine newLine = new CachedLine ();
-			newLine.startIndex = mStringBuilder.Length;
-			newLine.count = msg.Length + 1;
-			mCachedLines.Add (newLine);
-
-//			if(mMaxCacheLine){
-//				CachedLine oldLine = mCachedLines [0];
-//				mCachedLines.RemoveAt (0);
-//			}
-
-			mStringBuilder.AppendLine (msg);
-		}
-
-		struct CachedLine{
-			public int startIndex;
-			public int count;
-		}
-
-		#endregion
 	}
 }
+

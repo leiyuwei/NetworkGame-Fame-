@@ -86,7 +86,7 @@ namespace MultipleBattle
 
 		public void SendReadyToServer ()
 		{
-			Debug.Log ("SendReadyToServer");
+			Debug.logger.Log ("SendReadyToServer");
 			ClientMessage cm = new ClientMessage ();
 			cm.clientReady = true;
 			if (client.isConnected)
@@ -106,36 +106,36 @@ namespace MultipleBattle
 
 		void OnConnect (NetworkMessage nm)
 		{
-			Debuger.Log ("<color=green>Connect</color>");
+			Debug.logger.Log ("<color=green>Connect</color>");
 			if (onConnect != null)
 				onConnect (nm);
 		}
 
 		void OnDisconnect (NetworkMessage nm)
 		{
-			Debuger.Log ("<color=red>Disconnect</color>");
+			Debug.logger.Log ("<color=red>Disconnect</color>");
 			BattleClientUI.Instance.OnDisconnected ();
 			BattleClientController.Instance.Reset ();
 		}
 
 		void OnServerNotReady (NetworkMessage nm){
-			Debuger.Log ("<color=red>OnServerNotReady</color>");
+			Debug.logger.Log ("<color=red>OnServerNotReady</color>");
 		}
 
 		void OnError(NetworkMessage nm){
-			Debuger.Log ("<color=red>OnError</color>");
+			Debug.logger.Log ("<color=red>OnError</color>");
 		}
 
 		void OnPlayerStatus (NetworkMessage nm)
 		{
-			Debug.Log ("<color=greed>OnPlayerStatus</color>");
+			Debug.logger.Log ("<color=greed>OnPlayerStatus</color>");
 			PlayerStatusArray psa = nm.ReadMessage<PlayerStatusArray> ();
 			BattleClientUI.Instance.OnPlayerStatus (psa);
 		}
 
 		void OnCreatePlayer (NetworkMessage nm)
 		{
-			Debug.Log ("OnCreatePlayer");
+			Debug.logger.Log ("OnCreatePlayer");
 			CreatePlayer cp = nm.ReadMessage<CreatePlayer> ();
 			BattleClientController.Instance.CreatePlayers (cp);
 			BattleClientController.Instance.Begin ();
