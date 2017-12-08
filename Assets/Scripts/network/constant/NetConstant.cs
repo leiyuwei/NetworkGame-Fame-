@@ -8,7 +8,7 @@ namespace MultipleBattle
 	{
 
 		public static int listene_port = 8080;
-		public static int max_player_count = 1;
+		public static int max_player_count = 2;
 
 		public const int FRAME_RATE = 30;
 		public const string MAX_PLAYER_CONSTANT = "MAX_PLAYER";

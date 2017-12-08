@@ -133,12 +133,11 @@ namespace MultipleBattle
 		void ConstructFrameMessageAndIncreaseFrameIndex(ServerMessage currentMessage){
 			currentMessage.frame = mFrame;
 			List<HandleMessage> handleMessages = new List<HandleMessage> ();
-			int i = 0;
-			foreach(int playerId in mHandleMessages.Keys){
-				handleMessages.Add (mHandleMessages [playerId]);
-				mHandleMessages [playerId] = null;
-				i++;
-			}
+//			foreach(int playerId in mHandleMessages.Keys){
+			if(mHandleMessages.ContainsKey(1))
+				handleMessages.Add (mHandleMessages [1]);
+//				mHandleMessages [playerId] = null;
+//			}
 			currentMessage.handleMessages = handleMessages.ToArray();
 			mFrame++;
 		}
