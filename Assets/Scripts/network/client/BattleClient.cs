@@ -72,18 +72,19 @@ namespace MultipleBattle
 		}
 
 		//send and recieve;
-		//1.connect to server; 
-		//2.get player status from server; 
+		//1.connect to server;
+		//2.get player status from server;
 		//3.send ready to server;
 		//4.recieve frame message from server;
 		//5.send player handle to server;
+
 		#region 1.Send
 
 		//1.Connect to server.
 		//when connected,will call onConnect callback.
-		public void Connect (string ip, int port,UnityAction<NetworkMessage> onConnect)
+		public void Connect (string ip, int port, UnityAction<NetworkMessage> onConnect)
 		{
-			Debug.Log(string.Format("{0},{1}",ip,port));
+			Debug.Log (string.Format ("{0},{1}", ip, port));
 			this.onConnect = onConnect;
 			client.Connect (ip, port);
 		}
@@ -107,7 +108,7 @@ namespace MultipleBattle
 
 		//3.after get the first frame message from server.
 		//can handle at client and send player handle to server.
-		public void SendPlayerHandle (PlayerHandle ph)
+		public void SendPlayerHandle (HandleMessage ph)
 		{
 			if (client.isConnected && isBattleBegin) {
 				client.Send (MessageConstant.CLIENT_PLAYER_HANDLE, ph);
@@ -117,11 +118,12 @@ namespace MultipleBattle
 		//4.send scene prepared message to server.
 		//when all the client's scene prepared ,really battle will begin
 		//(server will begin to send to frame message to client).
-		public void SendResourceReadyToServer(){
-			if(client.isConnected ){
+		public void SendResourceReadyToServer ()
+		{
+			if (client.isConnected) {
 				ClientMessage cm = new ClientMessage ();
 				cm.clientReady = true;
-				client.Send (MessageConstant.CLIENT_RESOURCE_READY,cm);
+				client.Send (MessageConstant.CLIENT_RESOURCE_READY, cm);
 			}
 		}
 
@@ -143,11 +145,13 @@ namespace MultipleBattle
 //			BattleClientController.Instance.Reset ();
 		}
 
-		void OnServerNotReady (NetworkMessage nm){
+		void OnServerNotReady (NetworkMessage nm)
+		{
 			Debug.logger.Log ("<color=red>OnServerNotReady</color>");
 		}
 
-		void OnError(NetworkMessage nm){
+		void OnError (NetworkMessage nm)
+		{
 			Debug.logger.Log ("<color=red>OnError</color>");
 		}
 
@@ -193,10 +197,8 @@ namespace MultipleBattle
 				UpdateFrame ();
 			}
 			//物理フレームを実行する(执行物理帧)
-//			if (mPhysicFrameRemain > 0) {
-				mPhysicFrameRemain--;
-				UpdateFixedFrame ();
-//			}
+			mPhysicFrameRemain--;
+			UpdateFixedFrame ();
 		}
 
 		void UpdateFrame ()
@@ -204,8 +206,6 @@ namespace MultipleBattle
 			if (mRunableMessages.ContainsKey (mFrame)) {
 				mCurrentServerMessage = mRunableMessages [mFrame];
 				mRunableMessages.Remove (mFrame);
-				if (onFrameUpdate != null)
-					onFrameUpdate (mCurrentServerMessage);
 				mFrame++;
 				mPhysicFrameRemain = 3;
 				Time.timeScale = 1;
@@ -214,8 +214,11 @@ namespace MultipleBattle
 			}
 		}
 
-		void UpdateFixedFrame(){
+		void UpdateFixedFrame ()
+		{
 //			BattleClientController.Instance.UpdateFixedFrame ();
+			if (onFrameUpdate != null)
+				onFrameUpdate (mCurrentServerMessage);
 		}
 
 		void OnFrameMessage (NetworkMessage mb)
@@ -265,8 +268,8 @@ namespace MultipleBattle
 			}
 		}
 
-		public int Frame{
-			get{ 
+		public int Frame {
+			get { 
 				return mFrame;
 			}
 		}

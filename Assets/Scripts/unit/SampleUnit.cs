@@ -17,14 +17,14 @@ public class SampleUnit : MonoBehaviour {
 
 	public void MoveTo(Vector2 targetPos){
 		mTargetPos = targetPos;
-		mTrans.LookAt (new Vector3(targetPos.x,mTrans.position.y,targetPos.y));
+		mTrans.LookAt (new Vector3(targetPos.x / 1000,mTrans.position.y,targetPos.y / 1000));
 		mDirect = mTrans.forward;
 		mIsMoving = true;
 	}
 
 	public void FrameUpdate(){
 		if (mIsMoving) {
-			float currentDic = Vector3.Distance (mTrans.position, new Vector3 (mTargetPos.x, mTrans.position.y, mTargetPos.y));
+			float currentDic = Vector3.Distance (mTrans.position, new Vector3 (mTargetPos.x / 1000, mTrans.position.y, mTargetPos.y / 1000));
 			if (currentDic > speed) {
 				mTrans.position += mDirect * speed;
 			} else {

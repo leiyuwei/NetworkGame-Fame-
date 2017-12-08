@@ -215,7 +215,7 @@ namespace MultipleBattle
 		void OnRecievePlayerHandle(NetworkMessage msg){
 			HandleMessage playerHandle = msg.ReadMessage<HandleMessage> ();
 			playerHandle.playerId = msg.conn.connectionId;
-			Debug.logger.Log (JsonUtility.ToJson(playerHandle));
+			Debug.logger.Log (JsonUtility.ToJson(playerHandle.targetPos));
 			if (!mHandleMessages.ContainsKey (playerHandle.playerId)) {
 				mHandleMessages.Add (playerHandle.playerId, playerHandle);
 			} else {

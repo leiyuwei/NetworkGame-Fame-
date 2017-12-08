@@ -26,25 +26,34 @@ namespace MultipleBattle
 		void Update ()
 		{
 			if (Input.GetKeyDown (KeyCode.G)) {
-				Debug.Log ("KeyCode.G");
 				mBattleClient.SendResourceReadyToServer ();
 			}
-
 			if (Input.GetMouseButtonDown (0)) {
 				RaycastHit hit;
 				if (Physics.Raycast (battleCamera.ScreenPointToRay (Input.mousePosition), out hit, Mathf.Infinity, 1 << LayerConstant.LAYER_GROUND)) {
-					Debug.Log (hit);
-					unit.MoveTo (new Vector2(hit.point.x,hit.point.z));
+//					Debug.Log (hit);
+//					unit.MoveTo (new Vector2(hit.point.x,hit.point.z));
+					SendMessage (hit.point);
 				}
 			}
+		}
 
+		void SendMessage(Vector3 targetPos){
+//			unit.MoveTo (new Vector2(targetPos.x,targetPos.z));
+			HandleMessage handleMessage = new HandleMessage ();
+			handleMessage.targetPos = new Vector2 (Mathf.RoundToInt(targetPos.x * 1000),Mathf.RoundToInt(targetPos.z * 1000));
+//			PlayerHandle ph = new PlayerHandle ();
+//			ph.mousePos = targetPos;
+			mBattleClient.SendPlayerHandle (handleMessage);
 		}
 
 		public void FrameUpdate (ServerMessage sm)
 		{
-			Debug.Log (JsonUtility.ToJson (sm));
-			for (int i = 0; i < sm.playerHandles.Length; i++) {
-				Debug.Log (JsonUtility.ToJson (sm.playerHandles [i]));
+			if (sm != null) {
+				for (int i = 0; i < sm.handleMessages.Length; i++) {
+					unit.MoveTo (sm.handleMessages[i].targetPos);
+				}
+				sm.playerHandles = null;
 			}
 			unit.FrameUpdate ();
 		}
