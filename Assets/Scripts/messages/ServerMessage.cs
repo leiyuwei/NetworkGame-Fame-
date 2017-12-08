@@ -21,6 +21,7 @@ namespace MultipleBattle
 	public class HandleMessage : MessageBase{
 		public int playerId;
 		public string handle;
+		public Vector2 targetPos;
 	}
 
 	[Serializable]
