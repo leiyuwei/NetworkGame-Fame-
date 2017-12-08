@@ -46,6 +46,7 @@ namespace MultipleBattle
 			for (int i = 0; i < sm.playerHandles.Length; i++) {
 				Debug.Log (JsonUtility.ToJson (sm.playerHandles [i]));
 			}
+			unit.FrameUpdate ();
 		}
 
 	}

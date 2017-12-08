@@ -189,45 +189,29 @@ namespace MultipleBattle
 			if (!isBattleBegin)
 				return;
 			//論理が実行する(执行逻辑)
-			if (mPhysicFrameRemain == 0) {
+			if (mPhysicFrameRemain <= 0) {
 				UpdateFrame ();
 			}
 			//物理フレームを実行する(执行物理帧)
 //			if (mPhysicFrameRemain > 0) {
-//				mPhysicFrameRemain--;
-//				UpdateFixedFrame ();
+				mPhysicFrameRemain--;
+				UpdateFixedFrame ();
 //			}
 		}
 
 		void UpdateFrame ()
 		{
-			Debug.Log (mFrame);
 			if (mRunableMessages.ContainsKey (mFrame)) {
 				mCurrentServerMessage = mRunableMessages [mFrame];
 				mRunableMessages.Remove (mFrame);
-//				BattleClientController.Instance.UpdateFrame (mCurrentServerMessage);
 				if (onFrameUpdate != null)
 					onFrameUpdate (mCurrentServerMessage);
 				mFrame++;
-				BattleClientUI.Instance.txt_frame1.text = mFrame.ToString ();
 				mPhysicFrameRemain = 3;
 				Time.timeScale = 1;
 			} else {
 				Time.timeScale = 0;
 			}
-
-//			if (mRunableMessages.ContainsKey (mFrame)) {
-//				mCurrentServerMessage = mRunableMessages [mFrame];
-//				mRunableMessages.Remove (mFrame);
-//				BattleClientController.Instance.UpdateFrame (mCurrentServerMessage);
-//				mFrame++;
-//				BattleClientUI.Instance.txt_frame1.text = mFrame.ToString ();
-//				mPhysicFrameRemain = 33;
-//				Time.timeScale = 1;
-//			} else {
-//				//				Debug.Log (mPhysicFrameRemain);
-//				Time.timeScale = 0;
-//			}
 		}
 
 		void UpdateFixedFrame(){
@@ -236,7 +220,6 @@ namespace MultipleBattle
 
 		void OnFrameMessage (NetworkMessage mb)
 		{
-			Debug.Log (JsonUtility.ToJson(mb));
 			if (mStartTime == 0)
 				mStartTime = Time.realtimeSinceStartup;
 			mRecievedFrameCount++;
@@ -248,6 +231,7 @@ namespace MultipleBattle
 				mMaxRunableFrame++;
 				Time.timeScale = 1;
 			}
+			Debug.Log (mb + "||" + mCachedMessages.Count);
 		}
 
 		void OnFrameMessages (NetworkMessage mb)
@@ -270,7 +254,8 @@ namespace MultipleBattle
 				if (mMaxFrame < tm.frame) {
 					mMaxFrame = tm.frame;
 				}
-				//ordered list
+				//TODO 应该分段处理，否则的话这个会比较长
+				//Ordered list
 				for (int i = mCachedMessageList.Count - 1; i > 0; i--) {
 					if (mCachedMessageList [i].frame < tm.frame) {
 						mCachedMessageList.Insert (i, tm);
