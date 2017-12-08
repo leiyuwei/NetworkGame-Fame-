@@ -79,7 +79,8 @@ namespace MultipleBattle
 		//5.send player handle to server;
 		#region 1.Send
 
-		//1.Connect
+		//1.Connect to server.
+		//when connected,will call onConnect callback.
 		public void Connect (string ip, int port,UnityAction<NetworkMessage> onConnect)
 		{
 			Debug.Log(string.Format("{0},{1}",ip,port));

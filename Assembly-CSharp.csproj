@@ -64,6 +64,7 @@
      <Compile Include="Assets\Scripts\math\MathUtility.cs" />
      <Compile Include="Assets\Scripts\messages\ActionConstant.cs" />
      <Compile Include="Assets\Scripts\messages\ClientMessage.cs" />
+     <Compile Include="Assets\Scripts\messages\LayerConstant.cs" />
      <Compile Include="Assets\Scripts\messages\MessageConstant.cs" />
      <Compile Include="Assets\Scripts\messages\ServerMessage.cs" />
      <Compile Include="Assets\Scripts\network\client\BattleClient.cs" />
