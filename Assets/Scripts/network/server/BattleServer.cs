@@ -35,6 +35,7 @@ namespace MultipleBattle
 			NetworkServer.RegisterHandler (MessageConstant.CLIENT_READY,OnRecieveClientReady);
 			NetworkServer.RegisterHandler (MessageConstant.CLIENT_PLAYER_HANDLE,OnRecievePlayerHandle);
 			NetworkServer.RegisterHandler (MessageConstant.CLIENT_REQUEST_FRAMES, OnRecievePlayerFrameRequest);
+			NetworkServer.RegisterHandler (MessageConstant.CLIENT_RESOURCE_READY, OnRecieveClientResourceReady);
 			NetworkServer.RegisterHandler (MsgType.Connect, OnClientConnect);
 			NetworkServer.RegisterHandler (MsgType.Disconnect, OnClientDisconnect);
 			//Environmentでシステムのパラメーターをセートする
@@ -164,7 +165,6 @@ namespace MultipleBattle
 			Debug.logger.Log ("OnClientDisconnect");
 			NetworkConnection conn = nm.conn;
 			mConnections.Remove(conn.connectionId);
-
 			if (mConnections.Count == 0) {
 				Reset ();
 			} else {
@@ -172,13 +172,14 @@ namespace MultipleBattle
 			}
 		}
 
-		//收到用户准备
-		//ユーザーを準備できたメセージを
+		//收到用户准备准备完毕
+		//ユーザーを準備できたメセージを受信する
 		void OnRecieveClientReady(NetworkMessage msg){
 			Debug.logger.Log ("OnRecieveClientReady");
 			if(mConnections.ContainsKey(msg.conn.connectionId)){
 				mConnections [msg.conn.connectionId].isReady = true;
 			}
+			SendPlayerStatus ();
 			int count = 0;
 			foreach(PlayerStatus ps in mConnections.Values){
 				if (ps.isReady) {
@@ -186,17 +187,27 @@ namespace MultipleBattle
 				} 
 			}
 			if (count >= NetConstant.max_player_count) {
-				isBattleBegin = true;
 				SendBattleBegin ();
-				mNextFrameTime = Time.realtimeSinceStartup;
 			} 
-			SendPlayerStatus ();
 		}
 
-		//收到用户请求丢失的帧
-		// ユーザーからフレーム
-		void OnRecievePlayerFrameRequest(NetworkMessage msg){
-		
+		//收到客户端战斗资源准备完毕
+		//Clientを準備できたを受信する
+		void OnRecieveClientResourceReady(NetworkMessage msg){
+			Debug.logger.Log ("OnRecieveClientResouceReady");
+			if(mConnections.ContainsKey(msg.conn.connectionId)){
+				mConnections [msg.conn.connectionId].isSceneReady = true;
+			}
+			int count = 0;
+			foreach(PlayerStatus ps in mConnections.Values){
+				if (ps.isSceneReady) {
+					count++;
+				} 
+			}
+			if (count >= NetConstant.max_player_count) {
+				isBattleBegin = true;
+				mNextFrameTime = Time.realtimeSinceStartup;
+			}
 		}
 
 		//收到操作
@@ -210,6 +221,12 @@ namespace MultipleBattle
 			} else {
 				mHandleMessages[playerHandle.playerId] = playerHandle;
 			}
+		}
+
+		//收到用户请求丢失的帧
+		//ユーザーからフレーム
+		void OnRecievePlayerFrameRequest(NetworkMessage msg){
+
 		}
 		#endregion
 	}

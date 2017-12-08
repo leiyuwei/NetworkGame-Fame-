@@ -60,6 +60,7 @@ namespace MultipleBattle
 	public class PlayerStatus : MessageBase{
 		public int playerId;
 		public bool isReady;
+		public bool isSceneReady;
 	}
 
 }

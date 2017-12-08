@@ -43,6 +43,7 @@ namespace MultipleBattle
 			btn_disconnect.onClick.AddListener (Stop);
 			grid_players_items = new List<GameObject> ();
 			grid_players_items_dic = new Dictionary<int, GameObject> ();
+			BattleClient.Instance.onBattleStart = OnBattleBegin;
 		}
 
 		void Connect ()
@@ -96,8 +97,10 @@ namespace MultipleBattle
 			btn_save.gameObject.SetActive (false);
 		}
 
-		public void OnBattleBegin(){
+		public void OnBattleBegin(CreatePlayer cp){
 			btn_save.gameObject.SetActive (true);
+			UnityEngine.SceneManagement.SceneManager.LoadScene (SceneConstant.SCENE_BATTLE);
+			Debug.Log (JsonUtility.ToJson(cp));
 		}
 
 		public void OnPlayerStatus(PlayerStatusArray psa){

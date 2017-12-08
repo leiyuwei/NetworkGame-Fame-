@@ -19,14 +19,14 @@ namespace MultipleBattle
 		public string defaultIP;
 		public int defaultPort;
 		public bool isBattleBegin;
-
+		public UnityAction<ServerMessage> onFrameUpdate;
 		UnityAction<NetworkMessage> onConnect;
-
+		public UnityAction<CreatePlayer> onBattleStart;
 		NetworkClient client;
 		//一時受信したのフラームを保存される処（临时保存收到的帧）
 		Dictionary<int,ServerMessage> mCachedMessages;
-		//按序储存的帧,这个的作用在于，当网络出现异常，或者机器出现异常，
-		//挤压在这里有多帧的话，可以加快客户端游戏逻辑来追上实际进度。
+		//按序储存的帧,这个的作用在于,当网络出现异常,或者机器出现异常，
+		//挤压在这里有多帧的话,可以加快客户端游戏逻辑来追上实际进度。
 		Dictionary<int,ServerMessage> mRunableMessages;
 		List<ServerMessage> mCachedMessageList;
 		float mStartTime;
@@ -35,7 +35,7 @@ namespace MultipleBattle
 		//当前执行中的关键帧
 		ServerMessage mCurrentServerMessage;
 		//当前执行的关键帧番号
-		public int mFrame = 0;
+		int mFrame = 0;
 		//可执行的最大帧番号
 		int mMaxRunableFrame = 0;
 		//接收到到最大帧番号
@@ -53,11 +53,12 @@ namespace MultipleBattle
 			client.RegisterHandler (MessageConstant.SERVER_TO_CLIENT_MSG, OnFrameMessage);
 			client.RegisterHandler (MessageConstant.SERVER_TO_CLIENT_LIST_MSG, OnFrameMessages);
 			client.RegisterHandler (MessageConstant.SERVER_CLIENT_STATUS, OnPlayerStatus);
-			client.RegisterHandler (MessageConstant.CLIENT_READY, OnCreatePlayer);
+			client.RegisterHandler (MessageConstant.CLIENT_READY, OnBattleStart);
 			client.RegisterHandler (MsgType.Connect, OnConnect);
 			client.RegisterHandler (MsgType.NotReady, OnServerNotReady);
 			client.RegisterHandler (MsgType.Error, OnError);
 			client.RegisterHandler (MsgType.Disconnect, OnDisconnect);
+			DontDestroyOnLoad (gameObject);
 		}
 
 		public void Reset ()
@@ -70,8 +71,15 @@ namespace MultipleBattle
 			mStartTime = 0;
 		}
 
+		//send and recieve;
+		//1.connect to server; 
+		//2.get player status from server; 
+		//3.send ready to server;
+		//4.recieve frame message from server;
+		//5.send player handle to server;
 		#region 1.Send
 
+		//1.Connect
 		public void Connect (string ip, int port,UnityAction<NetworkMessage> onConnect)
 		{
 			Debug.Log(string.Format("{0},{1}",ip,port));
@@ -84,6 +92,9 @@ namespace MultipleBattle
 			client.Disconnect ();
 		}
 
+		//2.Send ready to server
+		//when all the player send the message,server will send battle begin message to client,
+		//(and client can go to load the really battle scene.)
 		public void SendReadyToServer ()
 		{
 			Debug.logger.Log ("SendReadyToServer");
@@ -93,10 +104,23 @@ namespace MultipleBattle
 				client.Send (MessageConstant.CLIENT_READY, cm);
 		}
 
+		//3.after get the first frame message from server.
+		//can handle at client and send player handle to server.
 		public void SendPlayerHandle (PlayerHandle ph)
 		{
 			if (client.isConnected && isBattleBegin) {
 				client.Send (MessageConstant.CLIENT_PLAYER_HANDLE, ph);
+			}
+		}
+
+		//4.send scene prepared message to server.
+		//when all the client's scene prepared ,really battle will begin
+		//(server will begin to send to frame message to client).
+		public void SendResourceReadyToServer(){
+			if(client.isConnected ){
+				ClientMessage cm = new ClientMessage ();
+				cm.clientReady = true;
+				client.Send (MessageConstant.CLIENT_RESOURCE_READY,cm);
 			}
 		}
 
@@ -115,7 +139,7 @@ namespace MultipleBattle
 		{
 			Debug.logger.Log ("<color=red>Disconnect</color>");
 			BattleClientUI.Instance.OnDisconnected ();
-			BattleClientController.Instance.Reset ();
+//			BattleClientController.Instance.Reset ();
 		}
 
 		void OnServerNotReady (NetworkMessage nm){
@@ -126,20 +150,23 @@ namespace MultipleBattle
 			Debug.logger.Log ("<color=red>OnError</color>");
 		}
 
+		//when player connect to server or player send ready to server etc.
+		//server will send player status change message to client.
 		void OnPlayerStatus (NetworkMessage nm)
 		{
-			Debug.logger.Log ("<color=greed>OnPlayerStatus</color>");
+			Debug.logger.Log ("<color=green>OnPlayerStatus</color>");
 			PlayerStatusArray psa = nm.ReadMessage<PlayerStatusArray> ();
 			BattleClientUI.Instance.OnPlayerStatus (psa);
 		}
 
-		void OnCreatePlayer (NetworkMessage nm)
+		//when battle started,server will send message to client.
+		//client will prepare/load battle scene.
+		void OnBattleStart (NetworkMessage nm)
 		{
-			Debug.logger.Log ("OnCreatePlayer");
+			Debug.logger.Log ("OnBattleStart");
 			CreatePlayer cp = nm.ReadMessage<CreatePlayer> ();
-			BattleClientController.Instance.CreatePlayers (cp);
-			BattleClientController.Instance.Begin ();
-			BattleClientUI.Instance.OnBattleBegin ();
+			if (onBattleStart != null)
+				onBattleStart (cp);
 			isBattleBegin = true;
 		}
 
@@ -165,34 +192,50 @@ namespace MultipleBattle
 				UpdateFrame ();
 			}
 			//物理フレームを実行する(执行物理帧)
-			if (mPhysicFrameRemain > 0) {
-				mPhysicFrameRemain--;
-				UpdateFixedFrame ();
-			}
+//			if (mPhysicFrameRemain > 0) {
+//				mPhysicFrameRemain--;
+//				UpdateFixedFrame ();
+//			}
 		}
 
 		void UpdateFrame ()
 		{
+			Debug.Log (mFrame);
 			if (mRunableMessages.ContainsKey (mFrame)) {
 				mCurrentServerMessage = mRunableMessages [mFrame];
 				mRunableMessages.Remove (mFrame);
-				BattleClientController.Instance.UpdateFrame (mCurrentServerMessage);
+//				BattleClientController.Instance.UpdateFrame (mCurrentServerMessage);
+				if (onFrameUpdate != null)
+					onFrameUpdate (mCurrentServerMessage);
 				mFrame++;
 				BattleClientUI.Instance.txt_frame1.text = mFrame.ToString ();
-				mPhysicFrameRemain = 33;
+				mPhysicFrameRemain = 3;
 				Time.timeScale = 1;
 			} else {
-				//				Debug.Log (mPhysicFrameRemain);
 				Time.timeScale = 0;
 			}
+
+//			if (mRunableMessages.ContainsKey (mFrame)) {
+//				mCurrentServerMessage = mRunableMessages [mFrame];
+//				mRunableMessages.Remove (mFrame);
+//				BattleClientController.Instance.UpdateFrame (mCurrentServerMessage);
+//				mFrame++;
+//				BattleClientUI.Instance.txt_frame1.text = mFrame.ToString ();
+//				mPhysicFrameRemain = 33;
+//				Time.timeScale = 1;
+//			} else {
+//				//				Debug.Log (mPhysicFrameRemain);
+//				Time.timeScale = 0;
+//			}
 		}
 
 		void UpdateFixedFrame(){
-			BattleClientController.Instance.UpdateFixedFrame ();
+//			BattleClientController.Instance.UpdateFixedFrame ();
 		}
 
 		void OnFrameMessage (NetworkMessage mb)
 		{
+			Debug.Log (JsonUtility.ToJson(mb));
 			if (mStartTime == 0)
 				mStartTime = Time.realtimeSinceStartup;
 			mRecievedFrameCount++;
@@ -233,6 +276,12 @@ namespace MultipleBattle
 						break;
 					}
 				}
+			}
+		}
+
+		public int Frame{
+			get{ 
+				return mFrame;
 			}
 		}
 
