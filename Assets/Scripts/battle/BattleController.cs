@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace MultipleBattle
 {
+	//基于send message的控制机制
 	public class BattleController : SingleMonoBehaviour<BattleController>
 	{
 
