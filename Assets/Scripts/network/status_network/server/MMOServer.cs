@@ -17,7 +17,8 @@ namespace MMO
 		float mFrameInterval;
 
 		Dictionary<int,PlayerData> dic_player_data;
-
+		Dictionary<int,int> connectionIds;
+		int mCurrentMaxId = 0;
 		public TransferData data;
 		public const int FRAME_RATE = 10;//10回per1秒。
 
@@ -27,6 +28,7 @@ namespace MMO
 			this.networkPort = NetConstant.LISTENE_PORT;
 			this.StartServer ();
 			dic_player_data = new Dictionary<int, PlayerData> ();
+			connectionIds = new Dictionary<int, int> ();
 			connectionConfig.SendDelay = 1;
 			NetworkServer.RegisterHandler (MsgType.Connect, OnClientConnect);
 			NetworkServer.RegisterHandler (MsgType.Disconnect, OnClientDisconnect);
@@ -147,6 +149,11 @@ namespace MMO
 		void OnClientConnect (NetworkMessage nm)
 		{
 			Debug.logger.Log ("OnClientConnect");
+			PlayerInfo playerInfo = new PlayerInfo ();
+			playerInfo.playerId = mCurrentMaxId;
+			connectionIds.Add (nm.conn.connectionId,mCurrentMaxId);
+			NetworkServer.SendToClient (nm.conn.connectionId,MessageConstant.SERVER_TO_CLIENT_PLAYER_INFO,playerInfo);
+			mCurrentMaxId++;
 			//			NetworkConnection conn = nm.conn;
 			//			if (isBattleBegin || mConnections.Count >= NetConstant.max_player_count) {
 			//				conn.Disconnect ();
@@ -162,6 +169,9 @@ namespace MMO
 		void OnClientDisconnect (NetworkMessage nm)
 		{
 			Debug.logger.Log ("OnClientDisconnect");
+			int playerId = connectionIds [nm.conn.connectionId];
+			connectionIds.Remove (nm.conn.connectionId);
+			dic_player_data.Remove (playerId);
 			//			NetworkConnection conn = nm.conn;
 			//			mConnections.Remove(conn.connectionId);
 			//			if (mConnections.Count == 0) {
@@ -192,12 +202,10 @@ namespace MMO
 
 		void OnRecievePlayerMessage(NetworkMessage msg){
 			PlayerData playerHandle = msg.ReadMessage<PlayerData> ();
-			playerHandle.playerId = msg.conn.connectionId;
-			if (!dic_player_data.ContainsKey (msg.conn.connectionId)) {
-				dic_player_data.Add (msg.conn.connectionId, playerHandle);
-			} else {
-				dic_player_data [msg.conn.connectionId] = playerHandle;
-			}
+			if (!dic_player_data.ContainsKey (playerHandle.playerId)) {
+				dic_player_data.Add (playerHandle.playerId, playerHandle);
+			} 
+			dic_player_data [playerHandle.playerId] = playerHandle;
 			TransferData data = new TransferData ();
 			data.playerDatas = new PlayerData[dic_player_data.Count];
 			int i = 0;
@@ -205,10 +213,8 @@ namespace MMO
 				data.playerDatas [i] = dic_player_data [id];
 				i++;
 			}
+			Debug.Log (JsonUtility.ToJson(playerHandle));
 			NetworkServer.SendUnreliableToAll (MessageConstant.SERVER_TO_CLIENT_MSG, data);
-			//			ServerMessage currentMessage = new ServerMessage ();
-			//			ConstructFrameMessageAndIncreaseFrameIndex (currentMessage);
-			//			NetworkServer.SendUnreliableToAll (MessageConstant.SERVER_TO_CLIENT_MSG, currentMessage);
 		}
 		#endregion
 	}

@@ -7,6 +7,10 @@ using System;
 namespace MMO
 {
 
+	public class PlayerInfo : MessageBase{
+		public int playerId;
+	}
+
 	[Serializable]
 	public class TransferData : MessageBase{
 		public PlayerData[] playerDatas;
@@ -17,6 +21,8 @@ namespace MMO
 		public int playerId;
 		public Vector3 playerPosition;
 		public Vector3 playerForward;
+		public string action;
+		public float animSpeed;
 	}
 
 }

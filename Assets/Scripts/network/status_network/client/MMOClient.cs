@@ -11,37 +11,38 @@ namespace MMO
 		NetworkClient client;
 		UnityAction<NetworkMessage> onConnect;
 		UnityAction<NetworkMessage> onRecieveMessage;
+		UnityAction<NetworkMessage> onRecievePlayerInfo;
 
 		void Start ()
 		{
 			client = new NetworkClient ();
 			client.RegisterHandler (MsgType.Connect, OnConnect);
 			client.RegisterHandler (MsgType.Disconnect, OnDisconnect);
-			client.RegisterHandler (MessageConstant.SERVER_TO_CLIENT_MSG,OnRecieveMessage);
+			client.RegisterHandler (MessageConstant.SERVER_TO_CLIENT_PLAYER_INFO, OnRecievePlayerInfo);
+			client.RegisterHandler (MessageConstant.SERVER_TO_CLIENT_MSG, OnRecieveMessage);
 		}
-	
-		void Update(){
-			if(Input.GetKeyDown(KeyCode.H)){
-//				client.Connect ();
-				Connect("127.0.0.1",NetConstant.LISTENE_PORT,null,null);
+
+		void Update ()
+		{
+
+		}
+
+		public bool IsConnected {
+			get { 
+				return client.isConnected;
 			}
-
-			if(Input.GetKeyDown(KeyCode.J)){
-				SendMessage ();
-			}
 		}
 
-		public void SendMessage(){
-			PlayerData data = new PlayerData ();
-			data.playerForward = Vector3.forward;
-			data.playerPosition = Vector3.zero;
-			client.Send (MessageConstant.CLIENT_TO_SERVER_MSG,data);
+		public void Send (short msgType, MessageBase msg)
+		{
+			client.Send (msgType, msg);
 		}
 
-		public void Connect (string ip, int port, UnityAction<NetworkMessage> onConnect,UnityAction<NetworkMessage> onRecieveMessage)
+		public void Connect (string ip, int port, UnityAction<NetworkMessage> onConnect, UnityAction<NetworkMessage> onRecievePlayerInfo, UnityAction<NetworkMessage> onRecieveMessage)
 		{
 			Debug.Log (string.Format ("{0},{1}", ip, port));
 			this.onConnect = onConnect;
+			this.onRecievePlayerInfo = onRecievePlayerInfo;
 			this.onRecieveMessage = onRecieveMessage;
 			client.Connect (ip, port);
 		}
@@ -59,10 +60,16 @@ namespace MMO
 			//			BattleClientController.Instance.Reset ();
 		}
 
-		void OnRecieveMessage(NetworkMessage msg){
-			TransferData playerHandle = msg.ReadMessage<TransferData> ();
-			Debug.Log (JsonUtility.ToJson(playerHandle));
+		void OnRecievePlayerInfo (NetworkMessage msg)
+		{
+			if (onRecievePlayerInfo != null)
+				onRecievePlayerInfo (msg);
 		}
 
+		void OnRecieveMessage (NetworkMessage msg)
+		{
+			if (onRecieveMessage != null)
+				onRecieveMessage (msg);
+		}
 	}
 }
