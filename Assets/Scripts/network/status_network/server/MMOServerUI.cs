@@ -1,13 +1,25 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class MMOServerUI : SingleMonoBehaviour<MMOServerUI>
+namespace MMO
 {
-
-	protected override void Awake ()
+	public class MMOServerUI : SingleMonoBehaviour<MMOServerUI>
 	{
-		base.Awake ();
-	}
+		public Text txt_ip;
+		public Text txt_port;
 
+		protected override void Awake ()
+		{
+			base.Awake ();
+		}
+
+		void Start ()
+		{
+			txt_port.text = NetConstant.LISTENE_PORT.ToString ();
+			txt_ip.text = Network.player.ipAddress;
+		}
+
+	}
 }

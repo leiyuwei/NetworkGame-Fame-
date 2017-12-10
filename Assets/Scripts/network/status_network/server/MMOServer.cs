@@ -16,7 +16,7 @@ namespace MMO
 		float mNextFrameTime;
 		float mFrameInterval;
 
-		public MMOTransferData data;
+		public TransferData data;
 		public const int FRAME_RATE = 10;//10回per1秒。
 
 		void Awake ()
@@ -187,23 +187,13 @@ namespace MMO
 		}
 
 		void OnRecievePlayerMessage(NetworkMessage msg){
-			MMOPlayerData playerHandle = msg.ReadMessage<MMOPlayerData> ();
+			PlayerData playerHandle = msg.ReadMessage<PlayerData> ();
+//			NetworkServer.SendUnreliableToAll (MessageConstant., currentMessage);
 			//			ServerMessage currentMessage = new ServerMessage ();
 			//			ConstructFrameMessageAndIncreaseFrameIndex (currentMessage);
 			//			NetworkServer.SendUnreliableToAll (MessageConstant.SERVER_TO_CLIENT_MSG, currentMessage);
 		}
 		#endregion
-	}
-
-	[Serializable]
-	public class MMOTransferData : MessageBase{
-		public MMOPlayerData[] playerDatas;
-	}
-
-	[Serializable]
-	public class MMOPlayerData : MessageBase{
-		public int playerId;
-		public Vector3 playerPos;
 	}
 
 }
