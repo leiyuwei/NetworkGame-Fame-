@@ -6,7 +6,6 @@ namespace MultipleBattle
 {
 	public class MessageConstant
 	{
-
 		public const short SERVER_TO_CLIENT_MSG = 8001;
 		public const short SERVER_CLIENT_STATUS = 8002;
 		public const short SERVER_TO_CLIENT_LIST_MSG = 8003;
@@ -17,6 +16,5 @@ namespace MultipleBattle
 		public const short CLIENT_PLAYER_HANDLE = 9003;
 		public const short CLIENT_REQUEST_FRAMES = 9004;
 		public const short CLIENT_RESOURCE_READY = 9005;
-
 	}
 }
