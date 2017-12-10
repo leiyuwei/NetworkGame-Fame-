@@ -16,6 +16,7 @@ namespace MMO
 			client = new NetworkClient ();
 			client.RegisterHandler (MsgType.Connect, OnConnect);
 			client.RegisterHandler (MsgType.Disconnect, OnDisconnect);
+			client.RegisterHandler (MessageConstant.SERVER_TO_CLIENT_MSG,OnRecieveMessage);
 		}
 	
 		void Update(){
@@ -23,6 +24,10 @@ namespace MMO
 //				client.Connect ();
 				Connect("127.0.0.1",NetConstant.LISTENE_PORT,null);
 			}
+		}
+
+		public void SendMessage(){
+		
 		}
 
 		public void Connect (string ip, int port, UnityAction<NetworkMessage> onConnect)
@@ -43,6 +48,10 @@ namespace MMO
 		{
 			Debug.logger.Log ("<color=red>Disconnect</color>");
 			//			BattleClientController.Instance.Reset ();
+		}
+
+		void OnRecieveMessage(NetworkMessage nm){
+			
 		}
 
 	}
