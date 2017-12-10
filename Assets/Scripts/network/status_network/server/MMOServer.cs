@@ -16,6 +16,8 @@ namespace MMO
 		float mNextFrameTime;
 		float mFrameInterval;
 
+		Dictionary<int,PlayerData> dic_player_data;
+
 		public TransferData data;
 		public const int FRAME_RATE = 10;//10回per1秒。
 
@@ -24,9 +26,11 @@ namespace MMO
 			//			Reset ();
 			this.networkPort = NetConstant.LISTENE_PORT;
 			this.StartServer ();
+			dic_player_data = new Dictionary<int, PlayerData> ();
 			connectionConfig.SendDelay = 1;
 			NetworkServer.RegisterHandler (MsgType.Connect, OnClientConnect);
 			NetworkServer.RegisterHandler (MsgType.Disconnect, OnClientDisconnect);
+			NetworkServer.RegisterHandler (MessageConstant.CLIENT_TO_SERVER_MSG,OnRecievePlayerMessage);
 			NetworkServer.maxDelay = 0;
 			mFrameInterval = 1f / FRAME_RATE;
 
@@ -188,7 +192,20 @@ namespace MMO
 
 		void OnRecievePlayerMessage(NetworkMessage msg){
 			PlayerData playerHandle = msg.ReadMessage<PlayerData> ();
-//			NetworkServer.SendUnreliableToAll (MessageConstant., currentMessage);
+			playerHandle.playerId = msg.conn.connectionId;
+			if (!dic_player_data.ContainsKey (msg.conn.connectionId)) {
+				dic_player_data.Add (msg.conn.connectionId, playerHandle);
+			} else {
+				dic_player_data [msg.conn.connectionId] = playerHandle;
+			}
+			TransferData data = new TransferData ();
+			data.playerDatas = new PlayerData[dic_player_data.Count];
+			int i = 0;
+			foreach(int id in dic_player_data.Keys){
+				data.playerDatas [i] = dic_player_data [id];
+				i++;
+			}
+			NetworkServer.SendUnreliableToAll (MessageConstant.SERVER_TO_CLIENT_MSG, data);
 			//			ServerMessage currentMessage = new ServerMessage ();
 			//			ConstructFrameMessageAndIncreaseFrameIndex (currentMessage);
 			//			NetworkServer.SendUnreliableToAll (MessageConstant.SERVER_TO_CLIENT_MSG, currentMessage);
