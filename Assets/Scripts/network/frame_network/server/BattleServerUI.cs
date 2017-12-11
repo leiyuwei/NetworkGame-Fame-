@@ -63,6 +63,11 @@ namespace MultipleBattle
 			}
 		}
 
+		struct CachedLine{
+			public int startIndex;
+			public int count;
+		}
+
 		void AddDebugMessage(string msg){
 			CachedLine newLine = new CachedLine ();
 			newLine.startIndex = mStringBuilder.Length;
@@ -76,11 +81,6 @@ namespace MultipleBattle
 				txt_debug.text = Message;
 				scroll_debug.value = 0;
 			}
-		}
-
-		struct CachedLine{
-			public int startIndex;
-			public int count;
 		}
 
 		void OnDisable () {

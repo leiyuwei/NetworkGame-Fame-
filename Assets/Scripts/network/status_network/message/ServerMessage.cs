@@ -25,4 +25,12 @@ namespace MMO
 		public float animSpeed;
 	}
 
+	[Serializable]
+	public class ShootInfo : MessageBase{
+		public int playerId;
+		public int shootId;
+		public Vector3 shootForward;
+		public Vector3 shootPosition;
+	}
+
 }

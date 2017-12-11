@@ -20,7 +20,8 @@ namespace MMO
 		Dictionary<int,int> connectionIds;
 		int mCurrentMaxId = 0;
 		public TransferData data;
-		public const int FRAME_RATE = 10;//10回per1秒。
+		//10回per1秒。
+		public const int FRAME_RATE = 10;
 
 		void Awake ()
 		{
@@ -126,9 +127,9 @@ namespace MMO
 
 		//メセージをクライアントに送る
 		void SendFrameMessage(){
-			//			ServerMessage currentMessage = new ServerMessage ();
-			//			ConstructFrameMessageAndIncreaseFrameIndex (currentMessage);
-			//			NetworkServer.SendUnreliableToAll (MessageConstant.SERVER_TO_CLIENT_MSG, currentMessage);
+		//			ServerMessage currentMessage = new ServerMessage ();
+		//			ConstructFrameMessageAndIncreaseFrameIndex (currentMessage);
+		//			NetworkServer.SendUnreliableToAll (MessageConstant.SERVER_TO_CLIENT_MSG, currentMessage);
 		}
 
 		//メセージを構造して、フレーム番号が増える
@@ -143,6 +144,7 @@ namespace MMO
 		//			currentMessage.handleMessages = handleMessages.ToArray();
 		//			mFrame++;
 		//		}
+
 		#endregion
 
 		#region 2.Recieve
