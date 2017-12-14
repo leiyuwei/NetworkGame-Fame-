@@ -17,8 +17,8 @@ namespace MMO
 
 		void Start ()
 		{
-			txt_port.text = NetConstant.LISTENE_PORT.ToString ();
-			txt_ip.text = Network.player.ipAddress;
+			txt_ip.text = string.Format(" IP : {0}",Network.player.ipAddress);
+			txt_port.text = string.Format(" Port : {0}",NetConstant.LISTENE_PORT.ToString ());
 		}
 
 	}
