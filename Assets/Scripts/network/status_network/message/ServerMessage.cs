@@ -14,6 +14,7 @@ namespace MMO
 
 	public class PlayerInfo : MessageBase{
 		public int playerId;
+		public MMOUnitAttribute attribute;
 	}
 
 	[Serializable]

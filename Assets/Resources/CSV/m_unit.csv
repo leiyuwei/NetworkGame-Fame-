@@ -1,0 +1,3 @@
+id,name,m_unit_rarity_id,elements,m_world_id,m_master_id,is_active,m_skill_default,m_skill_id_1,m_skill_id_2,m_skill_id_3,m_skill_id_4,min_hp,max_hp,min_atk,max_atk,min_def,max_def,min_mat,max_mat,min_mdf,max_mdf,min_hit,max_hit,min_spd,max_spd,min_tec,max_tec,min_luk,max_luk,m_weapon_id,adv,resource_name,ui_resource_name,width
+1,六花,1,1|2|3,1,1001,0,23,23,1,1,1,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,124,10010201,10001,SD_B_001_0201_01,B_001,0
+2,胡桃,2,1|3|5,1,1002,0,23,23,1,1,1,142,142,142,142,142,142,142,142,142,142,142,142,142,142,142,142,142,142,10020201,10002,SD_B_001_0201_01,B_001,0

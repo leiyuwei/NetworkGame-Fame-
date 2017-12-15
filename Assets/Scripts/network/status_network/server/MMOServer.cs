@@ -45,6 +45,8 @@ namespace MMO
 			Debug.logger.Log ("OnClientConnect");
 			PlayerInfo playerInfo = new PlayerInfo ();
 			playerInfo.playerId = mCurrentMaxId;
+			playerInfo.attribute = MMOBattleServerManager.Instance.InitUnit (1);
+//			playerInfo.attribute = 
 			connectionIds.Add (nm.conn.connectionId,mCurrentMaxId);
 			if(onClientConnect!=null){
 				onClientConnect ();

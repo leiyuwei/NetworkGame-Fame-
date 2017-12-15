@@ -30,17 +30,24 @@ namespace MMO
 			terrainGo.transform.position = Vector3.zero;
 		}
 
-		public GameObject InitUnit(int unitIndex){
-			unitIndex = Mathf.Clamp (unitIndex,0,unitPrefabs.Count-1);
-			GameObject unitPrebfab = unitPrefabs[unitIndex].gameObject;
+		public MMOUnitAttribute InitUnit(int unitType){
+			unitType = Mathf.Clamp (unitType,0,unitPrefabs.Count-1);
+			GameObject unitPrebfab = unitPrefabs[unitType].gameObject;
 			GameObject unitGo = Instantiate (unitPrebfab) as GameObject;
 			unitGo.transform.position = mCurrentBattleTerrain.playerSpawnPosition;
-			MMOUnit unit = unitGo.GetComponent<MMOUnit> ();
-			mUnitList.Add (unit);
-			mUnitDic.Add (mUnitIndex,unit);
+			MUnit mUnit = CSVManager.Instance.GetUnit (unitType);
+			MMOUnit mmoUnit = unitGo.GetComponent<MMOUnit> ();
+			mmoUnit.unitAttribute.unitId = mUnitIndex;
+			mmoUnit.unitAttribute.unitType = unitType;
+			mmoUnit.unitAttribute.unitName = mUnit.name;
+			mmoUnit.unitAttribute.currentHP = mUnit.max_hp;
+			mmoUnit.unitAttribute.maxHP = mUnit.max_hp;
+			mUnitList.Add (mmoUnit);
+			mUnitDic.Add (mUnitIndex,mmoUnit);
 			mUnitIndex++;
-			return unitGo;
+			return mmoUnit.unitAttribute;
 		}
+
 
 	}
 

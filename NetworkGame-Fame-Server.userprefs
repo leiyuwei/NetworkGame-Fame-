@@ -1,9 +1,14 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/network/status_network/message/ServerMessage.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/csv/CSVManager.cs">
     <Files>
-      <File FileName="Assets/Scripts/network/status_network/message/ServerMessage.cs" Line="34" Column="13" />
-      <File FileName="Assets/Scripts/network/status_network/server/MMOServer.cs" Line="30" Column="20" />
+      <File FileName="Assets/Scripts/network/status_network/server/MMOBattleServerManager.cs" Line="46" Column="3" />
+      <File FileName="Assets/Scripts/network/status_network/server/MMOServer.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/network/status_network/message/ServerMessage.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/network/status_network/server/MMOServerUI.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/network/status_network/unit/MMOUnit.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/network/status_network/unit/MMOUnitAttribute.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/csv/CSVManager.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
