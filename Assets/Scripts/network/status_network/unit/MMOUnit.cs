@@ -6,10 +6,18 @@ namespace MMO
 {
 	public class MMOUnit : MonoBehaviour
 	{
-		public MMOUnitAttribute unitAttribute;
+		public MMOAttribute unitAttribute;
+		public MMOTransform unitTransform;
+		public MMOAnimation unitAnimation;
 
 		void Awake(){
-		
+			
 		}
+
+		void Update(){
+			unitTransform.playerPosition = transform.position;
+			unitTransform.playerForward = transform.forward;
+		}
+
 	}
 }

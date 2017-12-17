@@ -88,7 +88,6 @@
      <Compile Include="Assets\Scripts\network\status_network\server\MMOServer.cs" />
      <Compile Include="Assets\Scripts\network\status_network\server\MMOServerUI.cs" />
      <Compile Include="Assets\Scripts\network\status_network\unit\MMOUnit.cs" />
-     <Compile Include="Assets\Scripts\network\status_network\unit\MMOUnitAttribute.cs" />
      <Compile Include="Assets\Scripts\physics\CustomBoxCollider2D.cs" />
      <Compile Include="Assets\Scripts\physics\CustomCircleCollider2D.cs" />
      <Compile Include="Assets\Scripts\physics\CustomCollider2D.cs" />

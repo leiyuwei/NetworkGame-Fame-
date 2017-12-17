@@ -22,11 +22,6 @@ namespace MMO
 			client.RegisterHandler (MessageConstant.SERVER_TO_CLIENT_MSG, OnRecieveMessage);
 		}
 
-		void Update ()
-		{
-
-		}
-
 		public bool IsConnected {
 			get { 
 				return client.isConnected;

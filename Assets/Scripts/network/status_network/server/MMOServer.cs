@@ -13,13 +13,12 @@ namespace MMO
 	{
 
 		public bool isBattleBegin;
-
 		public UnityAction onClientConnect;
 		public UnityAction onClientDisconnect;
-
+		public UnityAction<PlayerInfo> onRecievePlayerMessage;
 		float mNextFrameTime;
 //		float mFrameInterval;
-		Dictionary<int,PlayerData> dic_player_data;
+		Dictionary<int,PlayerInfo> dic_player_data;
 		Dictionary<int,int> connectionIds;
 		int mCurrentMaxId = 0;
 		//10回per1秒。mmorpgは30FrameRate以内、FPSは60FrameRate.
@@ -29,7 +28,7 @@ namespace MMO
 		{
 			this.networkPort = NetConstant.LISTENE_PORT;
 			this.StartServer ();
-			dic_player_data = new Dictionary<int, PlayerData> ();
+			dic_player_data = new Dictionary<int, PlayerInfo> ();
 			connectionIds = new Dictionary<int, int> ();
 			connectionConfig.SendDelay = 1;
 			NetworkServer.RegisterHandler (MsgType.Connect, OnClientConnect);
@@ -39,15 +38,26 @@ namespace MMO
 //			mFrameInterval = 1f / FRAME_RATE;
 		}
 
+		public void UpdateMonsters(UnitInfo[] monsters){
+			TransferData data = new TransferData ();
+			data.monsterDatas = monsters;
+			NetworkServer.SendToAll (MessageConstant.SERVER_TO_CLIENT_MONSTER_INFO,data);
+		}
+
 		#region 1.Recieve
 		void OnClientConnect (NetworkMessage nm)
 		{
 			Debug.logger.Log ("OnClientConnect");
 			PlayerInfo playerInfo = new PlayerInfo ();
 			playerInfo.playerId = mCurrentMaxId;
-			playerInfo.attribute = MMOBattleServerManager.Instance.InitUnit (1);
-//			playerInfo.attribute = 
+			playerInfo.attribute = MMOBattleServerManager.Instance.InitUnit (1).unitAttribute;
+			playerInfo.attribute.level = 1;
+			playerInfo.animation = new MMOAnimation ();
+			playerInfo.transform = new MMOTransform ();
 			connectionIds.Add (nm.conn.connectionId,mCurrentMaxId);
+			if (!dic_player_data.ContainsKey (playerInfo.playerId)) {
+				dic_player_data.Add (playerInfo.playerId, playerInfo);
+			} 
 			if(onClientConnect!=null){
 				onClientConnect ();
 			}
@@ -74,21 +84,23 @@ namespace MMO
 			//Debug.logger.Log("OnRecieveClientReady");
 		}
 
+		//分成三个方法，分别更新transform，animation，attribute
 		void OnRecievePlayerMessage(NetworkMessage msg){
-			PlayerData playerHandle = msg.ReadMessage<PlayerData> ();
-			if (!dic_player_data.ContainsKey (playerHandle.playerId)) {
-				dic_player_data.Add (playerHandle.playerId, playerHandle);
-			} 
+			PlayerInfo playerHandle = msg.ReadMessage<PlayerInfo> ();
 			dic_player_data [playerHandle.playerId] = playerHandle;
 			TransferData data = GetTransferData ();
 			NetworkServer.SendUnreliableToAll (MessageConstant.SERVER_TO_CLIENT_MSG, data);
+			//TODO clear chat;
+			playerHandle.chat = "";
+			if (onRecievePlayerMessage != null)
+				onRecievePlayerMessage (playerHandle);
 		}
 
 		TransferData GetTransferData(){
 			TransferData data = new TransferData ();
-			data.playerDatas = new PlayerData[dic_player_data.Count];
+			data.playerDatas = new PlayerInfo[dic_player_data.Count];
 			int i = 0;
-			List<PlayerData> playerDataList = new List<PlayerData> ();
+			List<PlayerInfo> playerDataList = new List<PlayerInfo> ();
 			foreach(int id in dic_player_data.Keys){
 				playerDataList.Add (dic_player_data [id]);
 				data.playerDatas [i] = dic_player_data [id];
