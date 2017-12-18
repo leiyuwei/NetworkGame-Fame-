@@ -80,7 +80,9 @@
      <Compile Include="Assets\Scripts\network\frame_network\message\ServerMessage.cs" />
      <Compile Include="Assets\Scripts\network\frame_network\server\BattleServer.cs" />
      <Compile Include="Assets\Scripts\network\frame_network\server\BattleServerUI.cs" />
+     <Compile Include="Assets\Scripts\network\status_network\ai\SimpleAI.cs" />
      <Compile Include="Assets\Scripts\network\status_network\client\MMOClient.cs" />
+     <Compile Include="Assets\Scripts\network\status_network\constant\AnimationConstant.cs" />
      <Compile Include="Assets\Scripts\network\status_network\constant\MessageConstant.cs" />
      <Compile Include="Assets\Scripts\network\status_network\constant\NetConstant.cs" />
      <Compile Include="Assets\Scripts\network\status_network\message\ServerMessage.cs" />

@@ -44,6 +44,7 @@ namespace MMO
 		public MMOUnit InitUnit(int unitType){
 			unitType = Mathf.Clamp (unitType,0,unitPrefabs.Count-1);
 			GameObject unitPrebfab = unitPrefabs[unitType].gameObject;
+			unitPrebfab.SetActive (false);
 			GameObject unitGo = Instantiate (unitPrebfab) as GameObject;
 			unitGo.transform.position = mCurrentBattleTerrain.playerSpawnPosition;
 			MUnit mUnit = CSVManager.Instance.GetUnit (unitType);
@@ -56,6 +57,7 @@ namespace MMO
 			mUnitList.Add (mmoUnit);
 			mUnitDic.Add (mUnitIndex,mmoUnit);
 			mUnitIndex++;
+			unitGo.SetActive (true);
 			return mmoUnit;
 		}
 
@@ -71,8 +73,7 @@ namespace MMO
 				info.animation = unit.unitAnimation;
 				info.transform = unit.unitTransform;
 				unit.transform.position = new Vector3 (1060.9f+ Random.Range(-20f,20f), 24f, 1320 + Random.Range(-20f,20f));
-				info.animation.action = "idle";
-				info.animation.animSpeed = 1;
+				unit.GetComponent<SimpleAI> ().Move ();
 				mMonsterInfos[i] = info;
 			}
 		}

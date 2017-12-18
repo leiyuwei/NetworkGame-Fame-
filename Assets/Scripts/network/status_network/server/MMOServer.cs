@@ -50,7 +50,7 @@ namespace MMO
 			Debug.logger.Log ("OnClientConnect");
 			PlayerInfo playerInfo = new PlayerInfo ();
 			playerInfo.playerId = mCurrentMaxId;
-			playerInfo.attribute = MMOBattleServerManager.Instance.InitUnit (1).unitAttribute;
+			playerInfo.attribute = MMOBattleServerManager.Instance.InitUnit (0).unitAttribute;
 			playerInfo.attribute.level = 1;
 			playerInfo.animation = new MMOAnimation ();
 			playerInfo.transform = new MMOTransform ();

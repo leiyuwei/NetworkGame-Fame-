@@ -6,6 +6,7 @@ namespace MMO
 {
 	public class MMOUnit : MonoBehaviour
 	{
+
 		public MMOAttribute unitAttribute;
 		public MMOTransform unitTransform;
 		public MMOAnimation unitAnimation;
