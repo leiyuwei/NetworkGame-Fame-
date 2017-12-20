@@ -69,7 +69,7 @@ namespace MMO
 			terrainGo.transform.position = Vector3.zero;
 		}
 
-		MMOUnit InitUnit (int unitType)
+		MMOUnit InstantiateUnit (int unitType)
 		{
 			unitType = Mathf.Clamp (unitType, 0, unitPrefabs.Count - 1);
 			GameObject unitPrebfab = unitPrefabs [unitType].gameObject;
@@ -93,7 +93,7 @@ namespace MMO
 
 		public MMOUnit AddPlayer ()
 		{
-			MMOUnit mmoUnit = InitUnit (1);
+			MMOUnit mmoUnit = InstantiateUnit (1);
 			mPlayerUnitList.Add (mmoUnit);
 			mPlayerInfoList.Add (mmoUnit.unitInfo);
 			mPlayerInfos = new UnitInfo[mPlayerUnitList.Count];
@@ -109,7 +109,7 @@ namespace MMO
 			int monsterCount = 10;
 			mMonsterInfos = new UnitInfo[monsterCount];
 			for (int i = 0; i < monsterCount; i++) {
-				MMOUnit unit = InitUnit (1);
+				MMOUnit unit = InstantiateUnit (1);
 				mMonsterList.Add (unit);
 				UnitInfo info = unit.unitInfo;
 				unit.transform.position = new Vector3 (1060.9f + Random.Range (-20f, 20f), 24f, 1320 + Random.Range (-20f, 20f));

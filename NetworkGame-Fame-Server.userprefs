@@ -1,19 +1,15 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/network/status_network/unit/MMOUnit.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/network/status_network/server/MMOBattleServerManager.cs">
     <Files>
-      <File FileName="Assets/Scripts/network/status_network/shoot_objects/ShootObject.cs" Line="34" Column="28" />
-      <File FileName="Assets/Scripts/network/status_network/shoot_objects/ShootLineObject.cs" Line="21" Column="21" />
-      <File FileName="Assets/Scripts/network/status_network/utility/Instantiater.cs" Line="34" Column="3" />
-      <File FileName="Assets/Scripts/network/status_network/shoot_objects/ShootProjectileObject.cs" Line="59" Column="15" />
-      <File FileName="Assets/Scripts/network/status_network/server/MMOBattleServerManager.cs" Line="88" Column="181" />
-      <File FileName="Assets/Scripts/network/status_network/unit/MMOUnit.cs" Line="18" Column="3" />
+      <File FileName="Assets/Scripts/network/status_network/unit/MMOUnit.cs" Line="17" Column="18" />
+      <File FileName="Assets/Scripts/network/status_network/shoot_objects/ShootLineObject.cs" Line="19" Column="2" />
+      <File FileName="Assets/Scripts/network/status_network/server/MMOServer.cs" Line="44" Column="44" />
+      <File FileName="Assets/Scripts/network/status_network/server/MMOBattleServerManager.cs" Line="99" Column="47" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore>
-      <RunToCursorBreakpoint file="/Users/yingyugang/NetworkGame-Fame-Server/Assets/Scripts/network/status_network/ai/SimpleAI.cs" line="38" column="21" />
-    </BreakpointStore>
+    <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>

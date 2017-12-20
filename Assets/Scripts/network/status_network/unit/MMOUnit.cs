@@ -14,8 +14,10 @@ namespace MMO
 		}
 
 		void Update(){
+			#if NET_SERVER
 			unitInfo.transform.playerPosition = mTrans.position;
 			unitInfo.transform.playerForward = mTrans.forward;
+			#endif
 		}
 
 	}

@@ -72,7 +72,7 @@ namespace MMO
 			Debug.logger.Log ("OnClientDisconnect");
 			int playerId = connectionIds [nm.conn.connectionId];
 			connectionIds.Remove (nm.conn.connectionId);
-			dic_player_data.Remove (playerId);//診察
+			dic_player_data.Remove (playerId);
 			TransferData data = GetTransferData ();
 			if (onClientDisconnect != null)
 				onClientDisconnect ();
