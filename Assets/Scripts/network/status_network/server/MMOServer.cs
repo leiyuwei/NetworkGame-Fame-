@@ -17,7 +17,6 @@ namespace MMO
 		public UnityAction onClientDisconnect;
 		public UnityAction<PlayerInfo> onRecievePlayerMessage;
 		float mNextFrameTime;
-//		float mFrameInterval;
 		Dictionary<int,PlayerInfo> dic_player_data;
 		Dictionary<int,int> connectionIds;
 		int mCurrentMaxId = 0;
@@ -33,35 +32,38 @@ namespace MMO
 			connectionConfig.SendDelay = 1;
 			NetworkServer.RegisterHandler (MsgType.Connect, OnClientConnect);
 			NetworkServer.RegisterHandler (MsgType.Disconnect, OnClientDisconnect);
-			NetworkServer.RegisterHandler (MessageConstant.CLIENT_TO_SERVER_MSG,OnRecievePlayerMessage);
+			NetworkServer.RegisterHandler (MessageConstant.CLIENT_TO_SERVER_MSG, OnRecievePlayerMessage);
 			NetworkServer.maxDelay = 0;
 //			mFrameInterval = 1f / FRAME_RATE;
 		}
 
-		public void UpdateMonsters(UnitInfo[] monsters){
+		public void UpdateMonsters (UnitInfo[] monsters)
+		{
 			TransferData data = new TransferData ();
 			data.monsterDatas = monsters;
-			NetworkServer.SendToAll (MessageConstant.SERVER_TO_CLIENT_MONSTER_INFO,data);
+			NetworkServer.SendToAll (MessageConstant.SERVER_TO_CLIENT_MONSTER_INFO, data);
+			for (int i = 0; i < monsters.Length; i++) {
+				monsters [i].attack.attackType = -1;
+				monsters [i].attack.targetPos = Vector3.zero;
+			}
 		}
 
 		#region 1.Recieve
+
 		void OnClientConnect (NetworkMessage nm)
 		{
 			Debug.logger.Log ("OnClientConnect");
 			PlayerInfo playerInfo = new PlayerInfo ();
 			playerInfo.playerId = mCurrentMaxId;
-			playerInfo.attribute = MMOBattleServerManager.Instance.InitUnit (0).unitAttribute;
-			playerInfo.attribute.level = 1;
-			playerInfo.animation = new MMOAnimation ();
-			playerInfo.transform = new MMOTransform ();
-			connectionIds.Add (nm.conn.connectionId,mCurrentMaxId);
+			playerInfo.unitInfo = MMOBattleServerManager.Instance.AddPlayer().unitInfo;
+			connectionIds.Add (nm.conn.connectionId, mCurrentMaxId);
 			if (!dic_player_data.ContainsKey (playerInfo.playerId)) {
 				dic_player_data.Add (playerInfo.playerId, playerInfo);
 			} 
-			if(onClientConnect!=null){
+			if (onClientConnect != null) {
 				onClientConnect ();
 			}
-			NetworkServer.SendToClient (nm.conn.connectionId,MessageConstant.SERVER_TO_CLIENT_PLAYER_INFO,playerInfo);
+			NetworkServer.SendToClient (nm.conn.connectionId, MessageConstant.SERVER_TO_CLIENT_PLAYER_INFO, playerInfo);
 			mCurrentMaxId++;
 		}
 
@@ -79,13 +81,15 @@ namespace MMO
 
 		//收到用户准备准备完毕
 		//ユーザーを準備できたメセージを受信する
-		void OnRecieveClientReady(NetworkMessage msg){
+		void OnRecieveClientReady (NetworkMessage msg)
+		{
 			Debug.logger.Log ("OnRecieveClientReady");
 			//Debug.logger.Log("OnRecieveClientReady");
 		}
 
 		//分成三个方法，分别更新transform，animation，attribute
-		void OnRecievePlayerMessage(NetworkMessage msg){
+		void OnRecievePlayerMessage (NetworkMessage msg)
+		{
 			PlayerInfo playerHandle = msg.ReadMessage<PlayerInfo> ();
 			dic_player_data [playerHandle.playerId] = playerHandle;
 			TransferData data = GetTransferData ();
@@ -96,12 +100,13 @@ namespace MMO
 				onRecievePlayerMessage (playerHandle);
 		}
 
-		TransferData GetTransferData(){
+		TransferData GetTransferData ()
+		{
 			TransferData data = new TransferData ();
 			data.playerDatas = new PlayerInfo[dic_player_data.Count];
 			int i = 0;
 			List<PlayerInfo> playerDataList = new List<PlayerInfo> ();
-			foreach(int id in dic_player_data.Keys){
+			foreach (int id in dic_player_data.Keys) {
 				playerDataList.Add (dic_player_data [id]);
 				data.playerDatas [i] = dic_player_data [id];
 				i++;

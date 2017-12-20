@@ -27,11 +27,11 @@ namespace MMO
 		float mMaxMoveDistance = 20;
 		public void Move(){
 			mIsMoving = true;
-			mMMOUnit.unitAnimation.animSpeed = mMoveSpeed / 5;
+			mMMOUnit.unitInfo.animation.animSpeed = mMoveSpeed / 5;
 			if (Random.Range (0, 2) == 1) {
-				mMMOUnit.unitAnimation.action = AnimationConstant.UNIT_ANIMATION_CLIP_RUN;
+				mMMOUnit.unitInfo.animation.action = AnimationConstant.UNIT_ANIMATION_CLIP_RUN;
 			} else {
-				mMMOUnit.unitAnimation.action = AnimationConstant.UNIT_ANIMATION_CLIP_WALK;
+				mMMOUnit.unitInfo.animation.action = AnimationConstant.UNIT_ANIMATION_CLIP_WALK;
 				mMoveSpeed = mMoveSpeed / 6f;
 			}
 

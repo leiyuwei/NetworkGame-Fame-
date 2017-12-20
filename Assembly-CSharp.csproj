@@ -86,10 +86,16 @@
      <Compile Include="Assets\Scripts\network\status_network\constant\MessageConstant.cs" />
      <Compile Include="Assets\Scripts\network\status_network\constant\NetConstant.cs" />
      <Compile Include="Assets\Scripts\network\status_network\message\ServerMessage.cs" />
+     <Compile Include="Assets\Scripts\network\status_network\pool\Pool.cs" />
+     <Compile Include="Assets\Scripts\network\status_network\pool\PoolManager.cs" />
      <Compile Include="Assets\Scripts\network\status_network\server\MMOBattleServerManager.cs" />
      <Compile Include="Assets\Scripts\network\status_network\server\MMOServer.cs" />
      <Compile Include="Assets\Scripts\network\status_network\server\MMOServerUI.cs" />
+     <Compile Include="Assets\Scripts\network\status_network\shoot_objects\ShootLineObject.cs" />
+     <Compile Include="Assets\Scripts\network\status_network\shoot_objects\ShootObject.cs" />
+     <Compile Include="Assets\Scripts\network\status_network\shoot_objects\ShootProjectileObject.cs" />
      <Compile Include="Assets\Scripts\network\status_network\unit\MMOUnit.cs" />
+     <Compile Include="Assets\Scripts\network\status_network\utility\Instantiater.cs" />
      <Compile Include="Assets\Scripts\physics\CustomBoxCollider2D.cs" />
      <Compile Include="Assets\Scripts\physics\CustomCircleCollider2D.cs" />
      <Compile Include="Assets\Scripts\physics\CustomCollider2D.cs" />

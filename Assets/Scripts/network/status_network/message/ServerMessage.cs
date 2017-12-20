@@ -6,31 +6,47 @@ using System;
 
 namespace MMO
 {
+	[Serializable]
+	public class HitInfo:MessageBase{
+		public int casterId;
+		public int[] hitIds;
+		public int[] damages;
+		public int hitObjectId;
+	}
 
 	[Serializable]
 	public class UnitInfo : MessageBase{
 		public MMOAttribute attribute;
 		public MMOTransform transform;
 		public MMOAnimation animation;
+		public MMOAttack attack;
+
+		public UnitInfo(){
+			attribute = new MMOAttribute ();
+			transform = new MMOTransform ();
+			animation = new MMOAnimation ();
+			attack = new MMOAttack ();
+		}
 	}
 
 	[Serializable]
 	public class PlayerInfo : MessageBase{
 		public int playerId;
 		public string chat;
-		public MMOAttribute attribute;
-		public MMOTransform transform;
-		public MMOAnimation animation;
+		public int skillId;
+		public UnitInfo unitInfo;
 	}
 
 	[Serializable]
 	public class TransferData : MessageBase{
 		public PlayerInfo[] playerDatas;
 		public UnitInfo[] monsterDatas;
+		public HitInfo[] hitDatas;
 
 		public TransferData(){
 			playerDatas = new PlayerInfo[0];
 			monsterDatas = new UnitInfo[0];
+			hitDatas = new HitInfo[0];
 		}
 	}
 
@@ -60,5 +76,13 @@ namespace MMO
 		public string action;
 		public float animSpeed;
 	}
+
+	[System.Serializable]
+	public class MMOAttack:MessageBase
+	{
+		public int attackType;
+		public Vector3 targetPos;
+	}
+
 
 }
