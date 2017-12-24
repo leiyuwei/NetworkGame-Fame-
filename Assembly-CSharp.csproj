@@ -89,6 +89,7 @@
      <Compile Include="Assets\Scripts\network\status_network\pool\Pool.cs" />
      <Compile Include="Assets\Scripts\network\status_network\pool\PoolManager.cs" />
      <Compile Include="Assets\Scripts\network\status_network\server\MMOBattleServerManager.cs" />
+     <Compile Include="Assets\Scripts\network\status_network\server\MMOLanMessageSender.cs" />
      <Compile Include="Assets\Scripts\network\status_network\server\MMOServer.cs" />
      <Compile Include="Assets\Scripts\network\status_network\server\MMOServerUI.cs" />
      <Compile Include="Assets\Scripts\network\status_network\shoot_objects\ShootLineObject.cs" />

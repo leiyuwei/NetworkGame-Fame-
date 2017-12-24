@@ -20,7 +20,7 @@ namespace MMO
 		Dictionary<int,PlayerInfo> dic_player_data;
 		Dictionary<int,int> connectionIds;
 		int mCurrentMaxId = 0;
-		//10回per1秒。mmorpgは30FrameRate以内、FPSは60FrameRate.
+		//10回per1秒。mmorpg は 30 FrameRate 以内、FPS は 60 FrameRate 以内.
 		public const int FRAME_RATE = 30;
 
 		void Awake ()
@@ -43,8 +43,8 @@ namespace MMO
 			data.monsterDatas = monsters;
 			NetworkServer.SendToAll (MessageConstant.SERVER_TO_CLIENT_MONSTER_INFO, data);
 			for (int i = 0; i < monsters.Length; i++) {
-				monsters [i].attack.attackType = -1;
-				monsters [i].attack.targetPos = Vector3.zero;
+				monsters [i].action.attackType = -1;
+				monsters [i].action.targetPos = Vector3.zero;
 			}
 		}
 
@@ -53,6 +53,8 @@ namespace MMO
 		void OnClientConnect (NetworkMessage nm)
 		{
 			Debug.logger.Log ("OnClientConnect");
+			if (nm.channelId == 99)
+				return;
 			PlayerInfo playerInfo = new PlayerInfo ();
 			playerInfo.playerId = mCurrentMaxId;
 			playerInfo.unitInfo = MMOBattleServerManager.Instance.AddPlayer().unitInfo;
@@ -90,11 +92,11 @@ namespace MMO
 		//分成三个方法，分别更新transform，animation，attribute
 		void OnRecievePlayerMessage (NetworkMessage msg)
 		{
+			Debug.logger.Log ("OnRecievePlayerMessage");
 			PlayerInfo playerHandle = msg.ReadMessage<PlayerInfo> ();
 			dic_player_data [playerHandle.playerId] = playerHandle;
 			TransferData data = GetTransferData ();
 			NetworkServer.SendUnreliableToAll (MessageConstant.SERVER_TO_CLIENT_MSG, data);
-			//TODO clear chat;
 			playerHandle.chat = "";
 			if (onRecievePlayerMessage != null)
 				onRecievePlayerMessage (playerHandle);

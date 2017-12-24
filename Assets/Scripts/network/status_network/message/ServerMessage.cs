@@ -19,13 +19,13 @@ namespace MMO
 		public MMOAttribute attribute;
 		public MMOTransform transform;
 		public MMOAnimation animation;
-		public MMOAttack attack;
+		public MMOAction action;
 
 		public UnitInfo(){
 			attribute = new MMOAttribute ();
 			transform = new MMOTransform ();
 			animation = new MMOAnimation ();
-			attack = new MMOAttack ();
+			action = new MMOAction ();
 		}
 	}
 
@@ -78,7 +78,7 @@ namespace MMO
 	}
 
 	[System.Serializable]
-	public class MMOAttack:MessageBase
+	public class MMOAction:MessageBase
 	{
 		public int attackType;
 		public Vector3 targetPos;

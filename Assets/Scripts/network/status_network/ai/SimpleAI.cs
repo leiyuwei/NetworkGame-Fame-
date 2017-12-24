@@ -25,16 +25,15 @@ namespace MMO
 		}
 
 		float mMaxMoveDistance = 20;
-		public void Move(){
+		public void Move(int moveType){
 			mIsMoving = true;
 			mMMOUnit.unitInfo.animation.animSpeed = mMoveSpeed / 5;
-			if (Random.Range (0, 2) == 1) {
+			if (moveType == 1) {
 				mMMOUnit.unitInfo.animation.action = AnimationConstant.UNIT_ANIMATION_CLIP_RUN;
 			} else {
 				mMMOUnit.unitInfo.animation.action = AnimationConstant.UNIT_ANIMATION_CLIP_WALK;
 				mMoveSpeed = mMoveSpeed / 6f;
 			}
-
 			wayPoints.Add (mTrans.position + new Vector3(Random.Range(-mMaxMoveDistance,mMaxMoveDistance),0,0));
 			wayPoints.Add (mTrans.position + new Vector3(0,0,Random.Range(-mMaxMoveDistance,mMaxMoveDistance)));
 			wayPoints.Add (mTrans.position + new Vector3(Random.Range(-mMaxMoveDistance,mMaxMoveDistance),0,Random.Range(-mMaxMoveDistance,mMaxMoveDistance)));
