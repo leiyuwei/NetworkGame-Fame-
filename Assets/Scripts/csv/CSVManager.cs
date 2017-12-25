@@ -39,7 +39,11 @@ namespace MMO
 
 		public MUnit GetUnit (int unitId)
 		{
-			return mUnitDic [unitId];
+			if (mUnitDic.ContainsKey (unitId))
+				return mUnitDic [unitId];
+			else {
+				return mUnitList [0];
+			}
 		}
 
 		void LoadUnitTable ()

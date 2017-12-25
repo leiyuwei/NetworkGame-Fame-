@@ -65,8 +65,8 @@ namespace MMO
 
 		MMOUnit InstantiateUnit (int unitType)
 		{
-			unitType = Mathf.Clamp (unitType, 0, unitPrefabs.Count - 1);
-			GameObject unitPrebfab = unitPrefabs [unitType].gameObject;
+			//TODO prefabObject should match the unitType.
+			GameObject unitPrebfab = unitPrefabs [0].gameObject;
 			unitPrebfab.SetActive (false);
 			GameObject unitGo = Instantiate (unitPrebfab) as GameObject;
 			unitGo.transform.position = mCurrentBattleTerrain.playerSpawnPosition;
@@ -108,30 +108,31 @@ namespace MMO
 		{
 			mMonsterList = new List<MMOUnit> ();
 			int monsterCount = 10;
-			mMonsterInfos = new UnitInfo[monsterCount];
+			List<UnitInfo> unitInfoList = new List<UnitInfo>();
 			for (int i = 0; i < monsterCount; i++) {
 				MMOUnit unit = InstantiateUnit (2);
 				mMonsterList.Add (unit);
 				UnitInfo info = unit.unitInfo;
 				unit.transform.position = new Vector3 (1060.9f + Random.Range (-20f, 20f), 24f, 1320 + Random.Range (-20f, 20f));
 				if(i!=0)
-				unit.GetComponent<SimpleAI> ().Move (0);
+					unit.GetComponent<SimpleAI> ().Move (0);
 				else
 					unit.GetComponent<SimpleAI> ().Move (1);
-				mMonsterInfos [i] = info;
+				unitInfoList.Add(info);
 			}
-//
-//			for (int i = 0; i < monsterCount; i++) {
-//				MMOUnit unit = InstantiateUnit (1);
-//				mMonsterList.Add (unit);
-//				UnitInfo info = unit.unitInfo;
-//				unit.transform.position = new Vector3 (1148.3f + Random.Range (-20f, 20f), 24f, 1220.9f + Random.Range (-20f, 20f));
-//				if(i!=0)
-//					unit.GetComponent<SimpleAI> ().Move (0);
-//				else
-//					unit.GetComponent<SimpleAI> ().Move (1);
-//				mMonsterInfos [i + monsterCount ] = info;
-//			}
+
+			for (int i = 0; i < monsterCount; i++) {
+				MMOUnit unit = InstantiateUnit (1);
+				mMonsterList.Add (unit);
+				UnitInfo info = unit.unitInfo;
+				unit.transform.position = new Vector3 (1148.3f + Random.Range (-20f, 20f), 24f, 1220.9f + Random.Range (-20f, 20f));
+				if(i!=0)
+					unit.GetComponent<SimpleAI> ().Move (0);
+				else
+					unit.GetComponent<SimpleAI> ().Move (1);
+				unitInfoList.Add(info);
+			}
+			mMonsterInfos = unitInfoList.ToArray ();
 		}
 
 		#region TestCode
