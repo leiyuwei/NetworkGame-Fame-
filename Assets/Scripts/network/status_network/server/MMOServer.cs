@@ -95,11 +95,15 @@ namespace MMO
 			Debug.logger.Log ("OnRecievePlayerMessage");
 			PlayerInfo playerHandle = msg.ReadMessage<PlayerInfo> ();
 			dic_player_data [playerHandle.playerId] = playerHandle;
-			TransferData data = GetTransferData ();
-			NetworkServer.SendUnreliableToAll (MessageConstant.SERVER_TO_CLIENT_MSG, data);
+			UpdatePlayerData ();
 			playerHandle.chat = "";
 			if (onRecievePlayerMessage != null)
 				onRecievePlayerMessage (playerHandle);
+		}
+
+		public void UpdatePlayerData(){
+			TransferData data = GetTransferData ();
+			NetworkServer.SendUnreliableToAll (MessageConstant.SERVER_TO_CLIENT_MSG, data);
 		}
 
 		TransferData GetTransferData ()

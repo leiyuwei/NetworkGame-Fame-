@@ -33,9 +33,9 @@ public class MMOLanMessageSender : MonoBehaviour
 				try {
 					client.Send (dgram, dgram.Length, mIPEndPoint);
 				} catch (Exception ex) {
-//					Debug.LogError (ex.Message);
+					Debug.LogError (ex.Message);
 				}
-				yield return new WaitForSeconds (0.01f);
+				yield return new WaitForSeconds (0.1f);
 			}
 		}
 	}

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace MMO
 {
@@ -99,9 +100,12 @@ namespace MMO
 			
 		public void OnPlayerSkill(PlayerInfo playerInfo){
 			MMOUnit mmoUnit = mUnitDic [playerInfo.unitInfo.attribute.unitId];
-			if (mmoUnit.unitInfo.action.attackType > 0) {
+			Debug.Log (mmoUnit.unitInfo.action.attackType );
+			if (mmoUnit.unitInfo.action.attackType >= 0) {
 				Shoot (mmoUnit);
 			}
+			server.UpdatePlayerData ();
+			playerInfo.unitInfo.action.attackType = -1;
 		}
 
 		void InitMonsters ()
@@ -142,6 +146,7 @@ namespace MMO
 		{
 			GameObject shootGo = Instantiater.Spawn (false, shootPrefabs [0].gameObject, monster.transform.position + new Vector3 (0, 1, 0), monster.transform.rotation * Quaternion.Euler (60, 0, 0));
 			Vector3 targetPos = monster.transform.position + monster.transform.forward * 40;
+			//TODO hit logic
 			shootGo.GetComponent<ShootProjectileObject> ().Shoot (monster, targetPos, Vector3.zero);
 			monster.unitInfo.action.attackType = Random.Range (0, 3);
 			monster.unitInfo.action.targetPos = targetPos;
