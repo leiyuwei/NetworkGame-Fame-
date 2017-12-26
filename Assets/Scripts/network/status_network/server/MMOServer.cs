@@ -95,10 +95,10 @@ namespace MMO
 			Debug.logger.Log ("OnRecievePlayerMessage");
 			PlayerInfo playerHandle = msg.ReadMessage<PlayerInfo> ();
 			dic_player_data [playerHandle.playerId] = playerHandle;
-			UpdatePlayerData ();
-			playerHandle.chat = "";
 			if (onRecievePlayerMessage != null)
 				onRecievePlayerMessage (playerHandle);
+			UpdatePlayerData ();
+			playerHandle.chat = "";
 		}
 
 		public void UpdatePlayerData(){

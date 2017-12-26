@@ -36,7 +36,7 @@ namespace MMO
 			mPlayerInfoList = new List<UnitInfo> ();
 			mNextShootTime = Time.time + mShootInterval;
 			//TODO
-			server.onRecievePlayerMessage = OnPlayerSkill;
+			server.onRecievePlayerMessage = OnRecievePlayerMessage;
 		}
 
 		void Start ()
@@ -67,7 +67,7 @@ namespace MMO
 		MMOUnit InstantiateUnit (int unitType)
 		{
 			//TODO prefabObject should match the unitType.
-			GameObject unitPrebfab = unitPrefabs [0].gameObject;
+			GameObject unitPrebfab = unitPrefabs [unitType].gameObject;
 			unitPrebfab.SetActive (false);
 			GameObject unitGo = Instantiate (unitPrebfab) as GameObject;
 			unitGo.transform.position = mCurrentBattleTerrain.playerSpawnPosition;
@@ -88,7 +88,7 @@ namespace MMO
 
 		public MMOUnit AddPlayer ()
 		{
-			MMOUnit mmoUnit = InstantiateUnit (1);
+			MMOUnit mmoUnit = InstantiateUnit (0);
 			mPlayerUnitList.Add (mmoUnit);
 			mPlayerInfoList.Add (mmoUnit.unitInfo);
 			mPlayerInfos = new UnitInfo[mPlayerUnitList.Count];
@@ -98,11 +98,16 @@ namespace MMO
 			return mmoUnit;
 		}
 			
-		public void OnPlayerSkill(PlayerInfo playerInfo){
+		public void OnRecievePlayerMessage(PlayerInfo playerInfo){
 			MMOUnit mmoUnit = mUnitDic [playerInfo.unitInfo.attribute.unitId];
-			Debug.Log (mmoUnit.unitInfo.action.attackType );
-			if (mmoUnit.unitInfo.action.attackType >= 0) {
+			mmoUnit.transform.position = playerInfo.unitInfo.transform.playerPosition;
+			mmoUnit.transform.forward = playerInfo.unitInfo.transform.playerForward;
+			if (playerInfo.skillId > -1) {
+				//TODO check the skill use able;
+				//TODO 目的是演算出shoot的目的地。
 				Shoot (mmoUnit);
+				playerInfo.unitInfo.action.attackType = playerInfo.skillId;
+				playerInfo.unitInfo.action.targetPos = mmoUnit.unitInfo.action.targetPos;
 			}
 			server.UpdatePlayerData ();
 			playerInfo.unitInfo.action.attackType = -1;
@@ -142,14 +147,15 @@ namespace MMO
 		#region TestCode
 		//TODO
 		//入れてなんちゃんて
-		public void Shoot (MMOUnit monster)
+		public void Shoot (MMOUnit unit)
 		{
-			GameObject shootGo = Instantiater.Spawn (false, shootPrefabs [0].gameObject, monster.transform.position + new Vector3 (0, 1, 0), monster.transform.rotation * Quaternion.Euler (60, 0, 0));
-			Vector3 targetPos = monster.transform.position + monster.transform.forward * 40;
+			GameObject shootGo = Instantiater.Spawn (false, shootPrefabs [0].gameObject, unit.transform.position + new Vector3 (0, 1, 0), unit.transform.rotation * Quaternion.Euler (60, 0, 0));
+			Vector3 targetPos = unit.transform.position + unit.transform.forward * 40;
 			//TODO hit logic
-			shootGo.GetComponent<ShootProjectileObject> ().Shoot (monster, targetPos, Vector3.zero);
-			monster.unitInfo.action.attackType = Random.Range (0, 3);
-			monster.unitInfo.action.targetPos = targetPos;
+			shootGo.GetComponent<ShootProjectileObject> ().Shoot (unit, targetPos, Vector3.zero);
+			unit.unitInfo.action.attackType = Random.Range (0, 3);
+			unit.unitInfo.action.targetPos = targetPos;
+			Debug.Log (targetPos);
 		}
 		#endregion
 

@@ -25,17 +25,18 @@ public class MMOLanMessageSender : MonoBehaviour
 	IEnumerator _Sender ()
 	{
 		while (true) {
-			yield return new WaitForSeconds (0.01f);
+			yield return null;
 			for (int i = 0; i < 255; i++) { //建立255个线程扫描IP
 				string ip = mTargetIP + "." + i.ToString ();
 				IPAddress address = IPAddress.Parse (ip);
 				mIPEndPoint = new IPEndPoint (address, port);
 				try {
 					client.Send (dgram, dgram.Length, mIPEndPoint);
-				} catch (Exception ex) {
-					Debug.LogError (ex.Message);
 				}
-				yield return new WaitForSeconds (0.1f);
+				catch (Exception ex) {
+//					Debug.LogError (ex.Message);
+				}
+				yield return null;
 			}
 		}
 	}
